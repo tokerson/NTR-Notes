@@ -1,0 +1,39 @@
+@model IEnumerable<Z01.Models.Note>
+
+@{
+    ViewData["Title"] = "Notes";
+}
+
+<h1>Notes index</h1>
+<table class="table table-striped table-hover">
+    <thead class="thead-dark">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.date)
+            </th>
+            <th >
+                @Html.DisplayNameFor(model => model.title)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.title)
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<div class="row">
+    <button class="btn btn-default " asp-action="Edit">Edit</button> 
+    <button class="btn btn-default " asp-action="Details">Details</button> 
+    <button class="btn btn-default " asp-action="Delete">Delete</button>
+    <button class="btn btn-default col-md-offset-6">Prev Page</button>
+    <span>1 / 10</span>
+    <button class="btn btn-default ">Next Page</button>
+</div>
