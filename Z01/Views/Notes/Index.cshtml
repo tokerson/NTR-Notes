@@ -4,9 +4,30 @@
     ViewData["Title"] = "Notes";
 }
 
+@{
+    var categories = (List<string>) ViewData["Categories"];
+}
+
 <h1>Notes index</h1>
-<table class="table table-striped table-hover">
-    <thead class="thead-dark">
+
+<form class="form-inline row" style="border: 1px solid lightgray;padding: 10px;">
+    <div class="form-group col-md-offset-7 col-md-5">
+        <span>Category </span>
+        <select class="form-control">
+            <option></option>
+            @foreach (var category in @categories)
+            {
+                <option>
+                    @Html.DisplayFor(categoryItem => category)
+                </option>
+            }
+        </select>
+        <button class="btn btn-default">Filter</button>
+        <button class="btn btn-default">Clear</button>
+    </div>
+</form>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.date)
@@ -17,23 +38,27 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.title)
-            </td>
-        </tr>
-}
+            @foreach (var item in Model) {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.date)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.title)
+                            </td>
+                            <td>
+                                <button class="btn btn-default">
+                                    @Html.ActionLink("Edit", "Edit", new { title = item.title})
+                                </button> 
+                                <button class="btn btn-default" asp-action="Delete">Delete</button>
+                            </td>
+                        </tr>
+            }
     </tbody>
 </table>
 <div class="row">
-    <button class="btn btn-default " asp-action="Edit">Edit</button> 
-    <button class="btn btn-default " asp-action="Details">Details</button> 
-    <button class="btn btn-default " asp-action="Delete">Delete</button>
-    <button class="btn btn-default col-md-offset-6">Prev Page</button>
+    <button class="btn btn-default" asp-action="New">New</button> 
+    <button class="btn btn-default col-sm-offset-5 col-md-offset-6">Prev Page</button>
     <span>1 / 10</span>
     <button class="btn btn-default ">Next Page</button>
 </div>
