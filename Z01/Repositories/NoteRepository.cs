@@ -9,8 +9,11 @@ namespace Z01.Repositories
 {
     public class NoteRepository : IRepository<Note, string>
     {
+        private const string directory = "./data";
         public Note FindById(string title)
         {
+            Note note = null;
+            
             using (StreamReader file = new StreamReader("./data/"+title+".txt"))
             {
                 string line = file.ReadLine();
@@ -23,14 +26,14 @@ namespace Z01.Repositories
                     content += line;
                 }
 
-                Note note = new Note(title, categories.ToArray(), date, content);
-                return note;
+                note = new Note(title, categories.ToArray(), date, content);
             }
+
+            return note;
         }
 
         public IEnumerable FindAll()
         {
-            string directory = "./data";
             string[] files = Directory.GetFiles(directory);
             List<Note> notes = new List<Note>(); 
             foreach (string fileName in files) 
@@ -59,9 +62,22 @@ namespace Z01.Repositories
             return notes;
         }
 
-        public void Update(Note note)
+        public void Update(Note oldNote, Note newNote)
         {
-            throw new NotImplementedException();
+            //delete old 
+            //save new
+        }
+
+        public void Save(Note note)
+        {
+            //create new file
+        }
+
+        public void Delete(string title)
+        {
+            string[] files = Directory.GetFiles(directory);
+            string fileToDelete = files.Single(file => extractNoteTitle(file).Equals(title));
+            File.Delete(fileToDelete);
         }
         private List<string> extractCategories(string categoryString) 
         {

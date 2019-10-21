@@ -9,6 +9,10 @@ namespace Z01.Repositories
         T FindById(ID id);
         IEnumerable FindAll();
 
-        void Update(T obj);
+        void Update(T old_obj, T new_obj);
+
+        void Save(T obj);
+
+        void Delete(ID id);
     }
 }

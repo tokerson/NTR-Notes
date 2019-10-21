@@ -14,11 +14,12 @@ namespace Z01.Controllers
     public class NotesController : Controller
     {
         List<string> allCategories = new List<string>();
+        List<Note> notes;
         public IActionResult Index()
         {
             NoteRepository repository = new NoteRepository();
             ViewData["Categories"] = allCategories;
-            List<Note> notes = (List<Note>) repository.FindAll();
+            notes = (List<Note>) repository.FindAll();
             return View(notes);
         }
 
@@ -26,14 +27,44 @@ namespace Z01.Controllers
         {
             NoteRepository repository = new NoteRepository();
             Note note = repository.FindById(title);
+            if ( note == null ) 
+            {
+                return NotFound();
+            }
             return View(note);
         }
 
-        // [HttpPost]
-        // public IActionResult Edit(string note) 
-        // {
-        //     return View(loadNote(note));
-        // }
+        public IActionResult New()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(string old_title, [Bind("title, categories, date, content, extension")] Note note) 
+        {
+            NoteRepository noteRepository = new NoteRepository();
+            Note oldNote = noteRepository.FindById(old_title);
+
+            if (oldNote == null) {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                noteRepository.Update(oldNote, note);
+                return RedirectToAction(nameof(Index));
+            } 
+            return View(note);
+        }
+
+        public IActionResult Delete(string title)
+        {
+            NoteRepository noteRepository = new NoteRepository();
+            noteRepository.Delete(title);
+
+            return RedirectToAction(nameof(Index));
+        }
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });

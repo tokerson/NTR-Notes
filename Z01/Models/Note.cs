@@ -5,12 +5,16 @@ namespace Z01.Models
 {
        public class Note 
     {
+        public Note()
+        {
+            
+        }
         public Note(string title, string[] categories, DateTime date, string content = "", string extenstion = "txt") {
             this.title = title;
             this.categories = categories;
             this.date = date;
             this.content = content;
-            this.extenstion = extenstion;
+            this.extension = extenstion;
         }
         [Required(ErrorMessage = "Title is required")]
         public string title { get; set;}
@@ -19,6 +23,6 @@ namespace Z01.Models
         public DateTime date {get; set;}
         public string content {get; set;}
         
-        public string extenstion {get; set;}
+        public string extension {get; set;}
     }
 }

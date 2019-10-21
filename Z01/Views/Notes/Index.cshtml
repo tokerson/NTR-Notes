@@ -50,14 +50,14 @@
                                 <button class="btn btn-default">
                                     @Html.ActionLink("Edit", "Edit", new { title = item.title})
                                 </button> 
-                                <button class="btn btn-default" asp-action="Delete">Delete</button>
+                                <a class="btn btn-default" asp-action="Delete" asp-route-title="@item.title">Delete</a>
                             </td>
                         </tr>
             }
     </tbody>
 </table>
 <div class="row">
-    <button class="btn btn-default" asp-action="New">New</button> 
+    <a class="btn btn-default" asp-action="New">New</a> 
     <button class="btn btn-default col-sm-offset-5 col-md-offset-6">Prev Page</button>
     <span>1 / 10</span>
     <button class="btn btn-default ">Next Page</button>
