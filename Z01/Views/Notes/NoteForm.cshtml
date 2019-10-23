@@ -1,13 +1,13 @@
 @model Z01.Models.Note
 
 <div class="form-group">
-    <label class="col-sm-2 control-label" for="titleInput">Title of the note:</label>
+    <label class=" control-label" for="titleInput">Title of the note:</label>
     <!-- <input asp-for="title" type="text" class="form-control" /> -->
     @Html.EditorFor(model => model.title, new { htmlAttributes = new { @class="form-control", @id="titleInput"} })
     @Html.ValidationMessageFor(model => model.title)
 </div>
 <div class="form-group">
-    <div class="checkbox control-label">
+    <div class="col-sm-12 checkbox">
             <label class="control-label">
                 <input type="checkbox"/><b>Markdown</b>
             </label>
@@ -15,23 +15,53 @@
 </div>
 
 <div class="form-group">
-    <label class="control-label col-sm-2" for="textarea">In Categories: </label>
+    <label class="control-label" for="textarea">Content of the note: </label>
     <textarea class="form-control col-sm-6" asp-for="content" rows="8" id="textarea"></textarea>
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(model => model.extension, htmlAttributes: new { @class = "control-label col-md-2" })
-    <div class="col-md-10">
+    @Html.LabelFor(model => model.extension, htmlAttributes: new { @class = "control-label" })
+    <div>
         @Html.EditorFor(model => model.extension, new { htmlAttributes = new { @class = "form-control" } })
     </div>
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label col-md-2" })
-    <div class="col-md-10">
+    @Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label" })
+    <div>
         @Html.EditorFor(model => model.date, new { htmlAttributes = new { @class = "form-control" } })
         @Html.ValidationMessageFor(model => model.date)
     </div>
 </div>
 
-<input class="btn btn-default" type="submit" value="OK"/>
+<div class="container" style="padding:0">
+    <div class="row">
+        <div class="col-lg-2">
+            <label for="category-list">In categories:</label>
+        </div>
+        <div id="category-list" class="col-lg-5" style="height:150px;max-width:300px;overflow:auto;margin:20px 0px;">
+            <table class="table">
+                <tbody>
+                    @foreach (var category in Model.categories)
+                    {
+                        <tr>
+                            <th>
+                                @Html.DisplayFor(categoryItem => category)
+                            </th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <form class="form-inline col-lg-5">
+            <div class="form-group">
+                <label for="category-input">Category name:</label>
+                <input type="text" id=""category-input"/>
+                <input type="submit" class="btn btn-default" value="Add"/>
+                <input type="submit" class="btn btn-default" value="Remove"/>
+            </div>
+        </form>
+    </div>
+</div>
+
+<input class="btn btn-primary" type="submit" value="OK"/>

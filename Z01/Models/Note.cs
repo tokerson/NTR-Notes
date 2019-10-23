@@ -8,8 +8,9 @@ namespace Z01.Models
     {
         public Note()
         {
-            extension = "txt";
-            date = DateTime.Now;
+            this.extension = "txt";
+            this.date = DateTime.Now;
+            this.categories = new string[]{};
         }
         public Note(string title, string[] categories, DateTime date, string content = "", string extenstion = "txt")
         {

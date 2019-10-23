@@ -18,7 +18,7 @@ namespace Z01.Repositories
             using (StreamReader file = new StreamReader("./data/"+title+".txt"))
             {
                 string line = file.ReadLine();
-                List<string> categories = extractCategories(line);
+                HashSet<string> categories = extractCategories(line);
                 line = file.ReadLine();
                 DateTime date = extractDate(line);
                 string content = "";
@@ -43,15 +43,7 @@ namespace Z01.Repositories
                 {
                     //reading line describing category
                     string line = file.ReadLine();
-                    List<string> categories = extractCategories(line);
-                    // foreach(string category in categories)
-                    // {
-                    //     if (!allCategories.Contains(category))
-                    //     {
-                    //         allCategories.Add(category);
-                    //     }
-                    // }
-                    //reading line describing date
+                    HashSet<string> categories = extractCategories(line);
                     line = file.ReadLine();
                     DateTime date = extractDate(line);
 
@@ -90,9 +82,9 @@ namespace Z01.Repositories
             string fileToDelete = files.Single(file => extractNoteTitle(file).Equals(title));
             File.Delete(fileToDelete);
         }
-        private List<string> extractCategories(string categoryString) 
+        private HashSet<string> extractCategories(string categoryString) 
         {
-            return categoryString.Split(':')[1].Split(',').Select(item => item.Trim()).ToList();
+            return categoryString.Split(':')[1].Split(',').Select(item => item.Trim()).ToHashSet();
         }
 
         private DateTime extractDate(string dateString) 

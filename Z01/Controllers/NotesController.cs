@@ -1,25 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Z01.Models;
 using Z01.Repositories;
-using System.Collections;
 
 namespace Z01.Controllers
 {
     public class NotesController : Controller
     {
-        List<string> allCategories = new List<string>();
+        HashSet<string> allCategories = new HashSet<string>();
         List<Note> notes;
         public IActionResult Index()
         {
             NoteRepository repository = new NoteRepository();
-            ViewData["Categories"] = allCategories;
             notes = (List<Note>) repository.FindAll();
+            foreach( Note note in notes) 
+            {
+                foreach( string category in note.categories )
+                {
+                    allCategories.Add(category);
+                }
+            }
+            ViewData["Categories"] = allCategories;
             return View(notes);
         }
 
