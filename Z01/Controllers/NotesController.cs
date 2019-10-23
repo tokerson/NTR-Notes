@@ -34,9 +34,20 @@ namespace Z01.Controllers
             return View(note);
         }
 
-        public IActionResult New()
+        // public IActionResult New()
+        // {
+        //     return View();
+        // }
+
+        public IActionResult New([Bind("title, categories, date, content, extension")] Note note)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                NoteRepository noteRepository = new NoteRepository();
+                noteRepository.Save(note);
+                return RedirectToAction(nameof(Index));
+            } 
+            return View(note);
         }
 
         [HttpPost]
@@ -45,6 +56,9 @@ namespace Z01.Controllers
         {
             NoteRepository noteRepository = new NoteRepository();
             Note oldNote = noteRepository.FindById(old_title);
+
+            Console.WriteLine("Old title " + old_title);
+            Console.WriteLine("Title " + note.title);
 
             if (oldNote == null) {
                 return NotFound();

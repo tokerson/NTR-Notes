@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Z01.Models;
 
 namespace Z01.Repositories
@@ -65,11 +66,21 @@ namespace Z01.Repositories
         public void Update(Note oldNote, Note newNote)
         {
             //delete old 
+            Delete(oldNote.title);
             //save new
+            Console.WriteLine(newNote);
+            Save(newNote);
         }
 
         public void Save(Note note)
         {
+            StringBuilder stringBuilder = new StringBuilder("");
+            stringBuilder.Append("category: \n");
+            stringBuilder.Append("date: ");
+            stringBuilder.Append(note.date.ToString("dd/MM/yyyy") + "\n");
+            stringBuilder.Append(note.content);
+            string path = directory + "/" + note.title + "." + note.extension;
+            File.WriteAllText(path, stringBuilder.ToString());
             //create new file
         }
 
@@ -88,7 +99,8 @@ namespace Z01.Repositories
         {
             string date = dateString.Split(':')[1];
             date = date.Trim();
-             
+            
+            //TODO:Add handling exceptions 
             return Convert.ToDateTime(date);
         }
 

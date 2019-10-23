@@ -47,9 +47,7 @@
                                 @Html.DisplayFor(modelItem => item.title)
                             </td>
                             <td>
-                                <button class="btn btn-default">
-                                    @Html.ActionLink("Edit", "Edit", new { title = item.title})
-                                </button> 
+                                <a class="btn btn-default" asp-action="Edit" asp-route-title="@item.title">Edit</a>
                                 <a class="btn btn-default" asp-action="Delete" asp-route-title="@item.title">Delete</a>
                             </td>
                         </tr>

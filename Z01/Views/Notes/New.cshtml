@@ -2,29 +2,10 @@
 
 <h1>New note</h1>
 
-<form class="form-horizontal">
+<form class="form-horizontal" asp-action="New" method="post">
     @Html.ValidationSummary(true)
     <fieldset>
-        <div class="form-group">
-            <label class="col-sm-2 control-label" for="titleInput">Title of the note:</label>
-            <div class="col-sm-6">
-                @Html.EditorFor(model => model.title, new { htmlAttributes = new { @class="form-control", @id="titleInput"} })
-                @Html.ValidationMessageFor(model => model.title)
-            </div>
-            <div class="checkbox control-label">
-                <label class="control-label">
-                    <input type="checkbox"/><b>Markdown</b>
-                </label>
-            </div>
-        </div>
-        <div class="form-group">
-            <label class="control-label col-sm-2" for="textarea">In Categories: </label>
-            <textarea class="form-control col-sm-6" rows="8" id="textarea"></textarea>
-        </div>
-
-
-        <input class="btn btn-default" type="submit" value="OK"/>
-
+        @await Html.PartialAsync("NoteForm", Model)
     </fieldset>
 </form>
 
