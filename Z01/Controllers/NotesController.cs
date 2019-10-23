@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Z01.Models;
 using Z01.Repositories;
@@ -11,10 +12,17 @@ namespace Z01.Controllers
     {
         HashSet<string> allCategories = new HashSet<string>();
         List<Note> notes;
-        public IActionResult Index()
+        public IActionResult Index(DateTime start_date, DateTime last_date, string chosenCategory = "")
         {
+            // Console.WriteLine("Start date " + start_date);
+            // Console.WriteLine(start_date == default(DateTime));
+            // Console.WriteLine("Default " + default(DateTime));
+            // Console.WriteLine("Last date " + last_date);
+            Console.WriteLine("Category " + chosenCategory);
             NoteRepository repository = new NoteRepository();
+            
             notes = (List<Note>) repository.FindAll();
+            
             foreach( Note note in notes) 
             {
                 foreach( string category in note.categories )
@@ -22,9 +30,25 @@ namespace Z01.Controllers
                     allCategories.Add(category);
                 }
             }
+
+            if( chosenCategory != null && chosenCategory != "")
+            {
+                notes = notes.Where(note => note.categories.Contains(chosenCategory)).ToList();
+            }
+            
+            ViewData["StartDate"] = start_date;
+            ViewData["LastDate"] = last_date;
+            ViewData["Category"] = chosenCategory;
             ViewData["Categories"] = allCategories;
             return View(notes);
         }
+
+        // public IActionResult Index(DateTime start_date, DateTime last_date)
+        // {
+        //     Console.WriteLine("Start date " + start_date);
+        //     Console.WriteLine("Last date " + last_date);
+        //     return View(notes);
+        // }
 
         public IActionResult Edit(string title)
         {

@@ -10,17 +10,17 @@
 
 <h1>Notes index</h1>
 
-<form class="form-inline row" style="padding:10px">
+<form class="form-inline row" style="padding:10px" method="get">
     <div class="form-group col-md-7">
         <span>Start Date:</span>
-        <input class="form-control" type="date">
+        <input class="form-control" name="start_date" value="@ViewData["StartDate"]" type="date">
         <span>End Date:</span>
-        <input class="form-control"     type="date">
+        <input class="form-control" name="last_date" value="@ViewData["LastDate"]" type="date">
     </div>
     <div class="form-group col-md-5">
         
         <span>Category </span>
-        <select class="form-control">
+        <select class="form-control" name="chosenCategory" value="@ViewData["Category"]">
             @foreach (var category in @categories)
             {
                 <option>
