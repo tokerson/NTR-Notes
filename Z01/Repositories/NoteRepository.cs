@@ -69,7 +69,7 @@ namespace Z01.Repositories
             StringBuilder stringBuilder = new StringBuilder("");
             stringBuilder.Append("category: \n");
             stringBuilder.Append("date: ");
-            stringBuilder.Append(note.date.ToString("dd/MM/yyyy") + "\n");
+            stringBuilder.Append(note.date.ToString("yyyy/MM/dd") + "\n");
             stringBuilder.Append(note.content);
             string path = directory + "/" + note.title + "." + note.extension;
             File.WriteAllText(path, stringBuilder.ToString());

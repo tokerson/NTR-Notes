@@ -29,7 +29,14 @@ namespace Z01.Controllers
                 {
                     allCategories.Add(category);
                 }
+            } 
+
+            if(last_date == DateTime.MinValue)
+            {
+                last_date = DateTime.MaxValue;
             }
+
+            notes = notes.Where(note => note.date >= start_date && note.date <= last_date).ToList();
 
             if( chosenCategory != null && chosenCategory != "")
             {
@@ -78,7 +85,7 @@ namespace Z01.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        // [ValidateAntiForgeryToken]
         public IActionResult Edit(string old_title, [Bind("title, categories, date, content, extension")] Note note) 
         {
             NoteRepository noteRepository = new NoteRepository();
