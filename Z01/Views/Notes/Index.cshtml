@@ -61,9 +61,14 @@
     </tbody>
 </table>
 
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
 <div class="row">
     <a class="btn col-sm-offset-1 btn-primary" asp-action="New">New</a> 
-    <button class="btn btn-default col-sm-offset-5 col-md-offset-6">Prev Page</button>
-    <span>1 / 10</span>
-    <button class="btn btn-default ">Next Page</button>
+    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="btn btn-default col-sm-offset-5 col-md-offset-6 @prevDisabled">Prev Page</a>
+    <span>@Model.PageIndex / @Model.TotalPages</span>
+    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="btn btn-default @nextDisabled">Next Page</a>
 </div>

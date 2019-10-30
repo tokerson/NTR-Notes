@@ -56,10 +56,8 @@ namespace Z01.Controllers
             TempData.Keep("lastDate");
 
             ViewData["Categories"] = allCategories;
-            
-            PaginatedList<Note> paginatedList = new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize);
 
-            return View(paginatedList);
+            return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
         }
 
         public IActionResult Edit(string title)
