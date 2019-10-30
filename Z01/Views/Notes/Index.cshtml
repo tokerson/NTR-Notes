@@ -20,16 +20,16 @@
     <div class="form-group col-md-5">
         
         <span>Category </span>
-        <select class="form-control" name="chosenCategory" value="TempData["chosenCategory"]">
+        <select class="form-control" name="chosenCategory">
             @foreach (var category in @categories)
             {
-                <option>
+                <option selected="selected">
                     @Html.DisplayFor(categoryItem => category)
                 </option>
             }
         </select>
-        <input class="btn btn-default" type="submit" value="Filter"/>
-        <button class="btn btn-default">Clear</button>
+        <input class="btn btn-primary" type="submit" name="btnSubmit" value="Filter"/>
+        <input class="btn btn-default" type="submit" name="btnSubmit" value="Clear"/>
     </div>
 </form>
 <table class="table table-striped table-bordered table-hover">

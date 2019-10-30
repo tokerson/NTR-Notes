@@ -13,12 +13,13 @@ namespace Z01.Controllers
         HashSet<string> allCategories = new HashSet<string>();
         List<Note> notes;
 
-        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string chosenCategory = "")
+        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber,string btnSubmit, string chosenCategory = "")
         {
             NoteRepository repository = new NoteRepository();
             int pageSize = 5;
 
             notes = (List<Note>)repository.FindAll();
+
 
             foreach (Note note in notes)
             {
@@ -26,6 +27,14 @@ namespace Z01.Controllers
                 {
                     allCategories.Add(category);
                 }
+            }
+
+            ViewData["Categories"] = allCategories;
+            
+            if (btnSubmit == "Clear")
+            {
+                TempData.Clear();
+                return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
             }
 
             if (last_date == DateTime.MinValue)
@@ -51,11 +60,9 @@ namespace Z01.Controllers
             }
 
             TempData["chosenCategory"] = chosenCategory;
-            TempData.Keep("chosenCategory");
-            TempData.Keep("startDate");
-            TempData.Keep("lastDate");
-
-            ViewData["Categories"] = allCategories;
+            TempData.Peek("chosenCategory");
+            TempData.Peek("startDate");
+            TempData.Peek("lastDate");
 
             return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
         }
