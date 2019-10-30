@@ -1,4 +1,4 @@
-@model IEnumerable<Z01.Models.Note>
+@model PaginatedList<Z01.Models.Note>
 
 @{
     ViewData["Title"] = "Notes";
@@ -13,14 +13,14 @@
 <form class="form-inline row" style="padding:10px" method="get">
     <div class="form-group col-md-7">
         <span>Start Date:</span>
-        <input class="form-control" name="start_date" value="@ViewData["StartDate"]" type="date">
+        <input class="form-control" name="start_date" value="@TempData["startDate"]" type="date">
         <span>End Date:</span>
-        <input class="form-control" name="last_date" value="@ViewData["LastDate"]" type="date">
+        <input class="form-control" name="last_date" value="@TempData["lastDate"]" type="date">
     </div>
     <div class="form-group col-md-5">
         
         <span>Category </span>
-        <select class="form-control" name="chosenCategory" value="@ViewData["Category"]">
+        <select class="form-control" name="chosenCategory" value="TempData["chosenCategory"]">
             @foreach (var category in @categories)
             {
                 <option>
@@ -36,10 +36,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.date)
+                Date
             </th>
             <th >
-                @Html.DisplayNameFor(model => model.title)
+                Title
             </th>
         </tr>
     </thead>

@@ -12,66 +12,66 @@ namespace Z01.Controllers
     {
         HashSet<string> allCategories = new HashSet<string>();
         List<Note> notes;
-        public IActionResult Index(DateTime start_date, DateTime last_date, string chosenCategory = "")
+
+        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string chosenCategory = "")
         {
-            // Console.WriteLine("Start date " + start_date);
-            // Console.WriteLine(start_date == default(DateTime));
-            // Console.WriteLine("Default " + default(DateTime));
-            // Console.WriteLine("Last date " + last_date);
-            Console.WriteLine("Category " + chosenCategory);
             NoteRepository repository = new NoteRepository();
-            
-            notes = (List<Note>) repository.FindAll();
-            
-            foreach( Note note in notes) 
+            int pageSize = 1;
+
+            notes = (List<Note>)repository.FindAll();
+
+            foreach (Note note in notes)
             {
-                foreach( string category in note.categories )
+                foreach (string category in note.categories)
                 {
                     allCategories.Add(category);
                 }
-            } 
+            }
 
-            if(last_date == DateTime.MinValue)
+            if (last_date == DateTime.MinValue)
             {
                 last_date = DateTime.MaxValue;
+                TempData["lastDate"] = last_date;
+            }
+            else
+            {
+                TempData["lastDate"] = last_date.ToString("yyyy-MM-dd");
+            }
+
+            if (start_date != DateTime.MinValue)
+            {
+                TempData["startDate"] = start_date.ToString("yyyy-MM-dd");
             }
 
             notes = notes.Where(note => note.date >= start_date && note.date <= last_date).ToList();
 
-            if( chosenCategory != null && chosenCategory != "")
+            if (chosenCategory != null && chosenCategory != "")
             {
                 notes = notes.Where(note => note.categories.Contains(chosenCategory)).ToList();
             }
-            
-            ViewData["StartDate"] = start_date;
-            ViewData["LastDate"] = last_date;
-            ViewData["Category"] = chosenCategory;
-            ViewData["Categories"] = allCategories;
-            return View(notes);
-        }
 
-        // public IActionResult Index(DateTime start_date, DateTime last_date)
-        // {
-        //     Console.WriteLine("Start date " + start_date);
-        //     Console.WriteLine("Last date " + last_date);
-        //     return View(notes);
-        // }
+            TempData["chosenCategory"] = chosenCategory;
+            TempData.Keep("chosenCategory");
+            TempData.Keep("startDate");
+            TempData.Keep("lastDate");
+
+            ViewData["Categories"] = allCategories;
+            
+            PaginatedList<Note> paginatedList = new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize);
+
+            return View(paginatedList);
+        }
 
         public IActionResult Edit(string title)
         {
             NoteRepository repository = new NoteRepository();
             Note note = repository.FindById(title);
-            if ( note == null ) 
+            if (note == null)
             {
                 return NotFound();
             }
             return View(note);
         }
-
-        // public IActionResult New()
-        // {
-        //     return View();
-        // }
 
         public IActionResult New([Bind("title, categories, date, content, extension")] Note note)
         {
@@ -80,13 +80,13 @@ namespace Z01.Controllers
                 NoteRepository noteRepository = new NoteRepository();
                 noteRepository.Save(note);
                 return RedirectToAction(nameof(Index));
-            } 
+            }
             return View(note);
         }
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public IActionResult Edit(string old_title, [Bind("title, categories, date, content, extension")] Note note) 
+        public IActionResult Edit(string old_title, [Bind("title, categories, date, content, extension")] Note note)
         {
             NoteRepository noteRepository = new NoteRepository();
             Note oldNote = noteRepository.FindById(old_title);
@@ -94,7 +94,8 @@ namespace Z01.Controllers
             Console.WriteLine("Old title " + old_title);
             Console.WriteLine("Title " + note.title);
 
-            if (oldNote == null) {
+            if (oldNote == null)
+            {
                 return NotFound();
             }
 
@@ -102,7 +103,7 @@ namespace Z01.Controllers
             {
                 noteRepository.Update(oldNote, note);
                 return RedirectToAction(nameof(Index));
-            } 
+            }
             return View(note);
         }
 
@@ -118,10 +119,5 @@ namespace Z01.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        
-
-    
-
-        
     }
 }
