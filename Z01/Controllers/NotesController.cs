@@ -16,7 +16,7 @@ namespace Z01.Controllers
         public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string chosenCategory = "")
         {
             NoteRepository repository = new NoteRepository();
-            int pageSize = 1;
+            int pageSize = 5;
 
             notes = (List<Note>)repository.FindAll();
 
@@ -60,14 +60,35 @@ namespace Z01.Controllers
             return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
         }
 
-        public IActionResult Edit(string title)
+        public IActionResult Edit(string title, string btnSubmit = "", string category = "")
         {
             NoteRepository repository = new NoteRepository();
             Note note = repository.FindById(title);
+
+            category = category.Trim();
+
             if (note == null)
             {
                 return NotFound();
             }
+
+            switch (btnSubmit)
+            {
+                case "Add":
+                    note.categories.Append(category);
+                    new NoteRepository().Update(note, note);
+                    break;
+                case "Remove":
+                    if (note.categories.Contains(category))
+                    {
+                        note.categories.Remove(category);
+                        new NoteRepository().Update(note, note);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
             return View(note);
         }
 
@@ -84,17 +105,30 @@ namespace Z01.Controllers
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public IActionResult Edit(string old_title, [Bind("title, categories, date, content, extension")] Note note)
+        public IActionResult Edit(string old_title, [Bind("title, categories, date, content, extension")] Note note, string category="", string btnSubmit = "")
         {
             NoteRepository noteRepository = new NoteRepository();
             Note oldNote = noteRepository.FindById(old_title);
 
-            Console.WriteLine("Old title " + old_title);
-            Console.WriteLine("Title " + note.title);
-
             if (oldNote == null)
             {
                 return NotFound();
+            }
+
+            category = category ?? "";
+            category = category.Trim();
+
+            switch (btnSubmit)
+            {
+                case "Add":
+                    note.categories.Add(category);
+                    return View(note);
+                case "Remove":
+                    if (note.categories.Contains(category))
+                    {
+                        note.categories.Remove(category);
+                    }
+                    return View(note);
             }
 
             if (ModelState.IsValid)

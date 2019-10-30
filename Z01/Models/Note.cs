@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -10,9 +11,9 @@ namespace Z01.Models
         {
             this.extension = "txt";
             this.date = DateTime.Now;
-            this.categories = new string[]{};
+            this.categories = new List<string>();
         }
-        public Note(string title, string[] categories, DateTime date, string content = "", string extenstion = "txt")
+        public Note(string title, List<string> categories, DateTime date, string content = "", string extenstion = "txt")
         {
             this.title = title;
             this.categories = categories;
@@ -22,7 +23,7 @@ namespace Z01.Models
         }
         [Required(ErrorMessage = "Title is required")]
         public string title { get; set; }
-        public string[] categories { get; set; }
+        public List<string> categories { get; set; }
         [DataType(DataType.Date)]
         public DateTime date { get; set; }
         public string content { get; set; }

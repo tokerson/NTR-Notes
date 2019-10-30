@@ -27,7 +27,7 @@ namespace Z01.Repositories
                     content += line;
                 }
 
-                note = new Note(title, categories.ToArray(), date, content);
+                note = new Note(title, categories.ToList(), date, content);
             }
 
             return note;
@@ -47,7 +47,7 @@ namespace Z01.Repositories
                     line = file.ReadLine();
                     DateTime date = extractDate(line);
 
-                    Note newNote = new Note(extractNoteTitle(fileName), categories.ToArray(), date);
+                    Note newNote = new Note(extractNoteTitle(fileName), categories.ToList(), date);
                     notes.Add(newNote);
                 }
             }
@@ -57,10 +57,7 @@ namespace Z01.Repositories
 
         public void Update(Note oldNote, Note newNote)
         {
-            //delete old 
             Delete(oldNote.title);
-            //save new
-            Console.WriteLine(newNote);
             Save(newNote);
         }
 
@@ -73,7 +70,6 @@ namespace Z01.Repositories
             stringBuilder.Append(note.content);
             string path = directory + "/" + note.title + "." + note.extension;
             File.WriteAllText(path, stringBuilder.ToString());
-            //create new file
         }
 
         public void Delete(string title)
