@@ -42,21 +42,20 @@
         <div id="category-list" class="col-lg-5" style="height:150px;max-width:300px;overflow:auto;margin:20px 0px;">
             <table class="table">
                 <tbody>
-                    @foreach (var category in Model.categories)
-                    {
+                    @for (int i = 0; i < Model.categories.Count(); ++i) {
                         <tr>
                             <th>
-                                @Html.DisplayFor(categoryItem => category)
+                                @Html.TextBoxFor(item => Model.categories[i], new { @class = "form-control", @readonly = "readonly" })
                             </th>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
-        <form class="form-inline col-lg-5" asp-action="Edit" method="get">
+        <form class="form-inline col-lg-5">
             <div class="form-group">
                 <label for="category-input">Category name:</label>
-                <input type="text" id=""category-input" name="category"/>
+                <input type="text" id="category-input" name="category"/>
                 <input type="submit" class="btn btn-default" name="btnSubmit" value="Add"/>
                 <input type="submit" class="btn btn-default" name="btnSubmit" value="Remove"/>
             </div>

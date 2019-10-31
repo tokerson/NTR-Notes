@@ -14,8 +14,8 @@ namespace Z01.Repositories
         public Note FindById(string title)
         {
             Note note = null;
-            
-            using (StreamReader file = new StreamReader("./data/"+title+".txt"))
+
+            using (StreamReader file = new StreamReader("./data/" + title + ".txt"))
             {
                 string line = file.ReadLine();
                 HashSet<string> categories = extractCategories(line);
@@ -36,8 +36,8 @@ namespace Z01.Repositories
         public IEnumerable FindAll()
         {
             string[] files = Directory.GetFiles(directory);
-            List<Note> notes = new List<Note>(); 
-            foreach (string fileName in files) 
+            List<Note> notes = new List<Note>();
+            foreach (string fileName in files)
             {
                 using (StreamReader file = new StreamReader(fileName))
                 {
@@ -64,8 +64,16 @@ namespace Z01.Repositories
         public void Save(Note note)
         {
             StringBuilder stringBuilder = new StringBuilder("");
-            stringBuilder.Append("category: \n");
-            stringBuilder.Append("date: ");
+            stringBuilder.Append("category: ");
+            for (int i = 0; i < note.categories.Count(); ++i)
+            {
+                stringBuilder.Append(note.categories[i]);
+                if (i < note.categories.Count() - 1)
+                {
+                    stringBuilder.Append(",");
+                }
+            }
+            stringBuilder.Append("\ndate: ");
             stringBuilder.Append(note.date.ToString("yyyy/MM/dd") + "\n");
             stringBuilder.Append(note.content);
             string path = directory + "/" + note.title + "." + note.extension;
@@ -78,21 +86,21 @@ namespace Z01.Repositories
             string fileToDelete = files.Single(file => extractNoteTitle(file).Equals(title));
             File.Delete(fileToDelete);
         }
-        private HashSet<string> extractCategories(string categoryString) 
+        private HashSet<string> extractCategories(string categoryString)
         {
             return categoryString.Split(':')[1].Split(',').Select(item => item.Trim()).ToHashSet();
         }
 
-        private DateTime extractDate(string dateString) 
+        private DateTime extractDate(string dateString)
         {
             string date = dateString.Split(':')[1];
             date = date.Trim();
-            
+
             //TODO:Add handling exceptions 
             return Convert.ToDateTime(date);
         }
 
-        private string extractNoteTitle(string fileName) 
+        private string extractNoteTitle(string fileName)
         {
             return fileName.Split('/').Last().Split('.')[0];
         }
