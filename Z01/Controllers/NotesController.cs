@@ -16,7 +16,7 @@ namespace Z01.Controllers
         public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber,string btnSubmit, string chosenCategory = "")
         {
             NoteRepository repository = new NoteRepository();
-            int pageSize = 5;
+            int pageSize = 3;
 
             notes = (List<Note>)repository.FindAll();
 
@@ -109,8 +109,10 @@ namespace Z01.Controllers
             switch (btnSubmit)
             {
                 case "Add":
-                    note.categories.Add(category);
-                    ModelState.Clear();
+                    if(category.Length > 0){
+                        note.categories.Add(category);
+                        ModelState.Clear();
+                    }
                     return View(note);
                 case "Remove":
                     if (note.categories.Contains(category))

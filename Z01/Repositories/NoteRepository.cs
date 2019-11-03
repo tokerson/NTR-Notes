@@ -52,6 +52,8 @@ namespace Z01.Repositories
                 }
             }
 
+            notes.Sort((note1, note2) => note1.title.CompareTo(note2.title));
+
             return notes;
         }
 
@@ -88,7 +90,9 @@ namespace Z01.Repositories
         }
         private HashSet<string> extractCategories(string categoryString)
         {
-            return categoryString.Split(':')[1].Split(',').Select(item => item.Trim()).ToHashSet();
+            HashSet<string> categories = categoryString.Split(':')[1].Split(',').Select(item => item.Trim()).ToHashSet();
+            categories.Remove("");
+            return categories;
         }
 
         private DateTime extractDate(string dateString)
