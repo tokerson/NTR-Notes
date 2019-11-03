@@ -9,17 +9,15 @@ namespace Z01.Models
     {
         public Note()
         {
-            this.extension = "txt";
             this.date = DateTime.Now;
             this.categories = new List<string>();
         }
-        public Note(string title, List<string> categories, DateTime date, string content = "", string extenstion = "txt")
+        public Note(string title, List<string> categories, DateTime date, string content = "")
         {
             this.title = title;
             this.categories = categories;
             this.date = date.Date;
             this.content = content;
-            this.extension = extenstion;
         }
         [Required(ErrorMessage = "Title is required")]
         public string title { get; set; }
@@ -28,28 +26,6 @@ namespace Z01.Models
         public DateTime date { get; set; }
         public string content { get; set; }
 
-        [AvailableExtension, Required(ErrorMessage = "Extension must be either txt or md")]
-        public string extension { get; set; }
-
         public bool markdown { get; set; }
-    }
-
-    public class AvailableExtension : ValidationAttribute
-    {
-        // private readonly string _extension;
-        public readonly string[] availableExtensions = new string[] { "txt", "md" };
-        // public AvailableExtension(string extension)
-        // {
-            // this._extension = extension;
-        // }
-
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
-        {
-            if (!availableExtensions.Contains(value))
-            {
-                return new ValidationResult(FormatErrorMessage("Extension must be either txt or md"));
-            }
-            return ValidationResult.Success;
-        }
     }
 }

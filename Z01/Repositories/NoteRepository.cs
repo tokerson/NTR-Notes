@@ -26,6 +26,7 @@ namespace Z01.Repositories
 
             using (StreamReader file = new StreamReader(filePath))
             {
+                string extension = filePath.Split('.')[2];
                 string line = file.ReadLine();
                 HashSet<string> categories = extractCategories(line);
                 line = file.ReadLine();
@@ -37,6 +38,14 @@ namespace Z01.Repositories
                 }
 
                 note = new Note(title, categories.ToList(), date, content);
+
+                if (extension.Equals("md")){
+                    note.markdown = true;
+                }
+                else 
+                {
+                    note.markdown = false;
+                }
             }
 
             return note;
@@ -68,7 +77,7 @@ namespace Z01.Repositories
 
         public void Update(Note oldNote, Note newNote)
         {
-            if(getFilePathWithExtension(directory + newNote.title, extensions) != "")
+            if(oldNote.title != newNote.title && getFilePathWithExtension(directory + newNote.title, extensions) != "")
             {
                 throw new DuplicatedNoteTitleException("Note with a title " + newNote.title + " already exists");
             }
@@ -83,7 +92,7 @@ namespace Z01.Repositories
             {
                 throw new DuplicatedNoteTitleException("Note with a title " + note.title + " already exists");
             }
-
+            string extension = note.markdown ? ".md" : ".txt";
             StringBuilder stringBuilder = new StringBuilder("");
             stringBuilder.Append("category: ");
             for (int i = 0; i < note.categories.Count(); ++i)
@@ -97,7 +106,7 @@ namespace Z01.Repositories
             stringBuilder.Append("\ndate: ");
             stringBuilder.Append(note.date.ToString("yyyy/MM/dd") + "\n");
             stringBuilder.Append(note.content);
-            string path = directory + note.title + "." + note.extension;
+            string path = directory + note.title + extension;
             File.WriteAllText(path, stringBuilder.ToString());
         }
 
