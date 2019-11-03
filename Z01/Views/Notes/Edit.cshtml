@@ -9,6 +9,18 @@
         @await Html.PartialAsync("NoteForm", Model)
     </fieldset>
 </form>
+
 <div>
-    <a asp-action="Index">Back to Notes List</a>
+    @Html.ActionLink(
+        "Back to Notes List",
+        "Index",
+        "Notes",
+        new {
+            chosenCategory = TempData.Peek("chosenCategory"),
+            start_date = TempData.Peek("startDate"),
+            last_date = TempData.Peek("lastDate"),
+            pageNumber = TempData.Peek("pageNumber")
+        },
+        null
+    )
 </div>

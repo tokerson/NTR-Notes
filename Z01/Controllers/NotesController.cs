@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
 using Z01.Models;
 using Z01.Repositories;
 
@@ -10,7 +11,7 @@ namespace Z01.Controllers
 {
     public class NotesController : Controller
     {
-        private HashSet<string> allCategories = new HashSet<string>(){"All"};
+        private HashSet<string> allCategories = new HashSet<string>() { "All" };
         private List<Note> notes;
 
         public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string btnSubmit, string chosenCategory = "All")
@@ -60,9 +61,11 @@ namespace Z01.Controllers
             }
 
             TempData["chosenCategory"] = chosenCategory;
-            TempData.Peek("chosenCategory");
-            TempData.Peek("startDate");
-            TempData.Peek("lastDate");
+            TempData["pageNumber"] = pageNumber ?? 1;
+            TempData.Keep("chosenCategory");
+            TempData.Keep("startDate");
+            TempData.Keep("lastDate");
+            TempData.Keep("pageNumber");
 
             return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
         }
@@ -115,7 +118,8 @@ namespace Z01.Controllers
                     ModelState.AddModelError("title", e.Message);
                     return View(note);
                 }
-                return RedirectToAction(nameof(Index));
+                
+                return returnToIndex();
             }
             return View(note);
         }
@@ -132,6 +136,27 @@ namespace Z01.Controllers
                 return NotFound();
             }
 
+            category = category ?? "";
+            category = category.Trim();
+
+            switch (btnSubmit)
+            {
+                case "Add":
+                    if (category.Length > 0)
+                    {
+                        note.categories.Add(category);
+                        ModelState.Clear();
+                    }
+                    return View(note);
+                case "Remove":
+                    if (note.categories.Contains(category))
+                    {
+                        note.categories.Remove(category);
+                        ModelState.Clear();
+                    }
+                    return View(note);
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -143,7 +168,7 @@ namespace Z01.Controllers
                     ModelState.AddModelError("title", e.Message);
                     return View(note);
                 }
-                return RedirectToAction(nameof(Index));
+                return returnToIndex();
             }
             return View(note);
         }
@@ -153,11 +178,22 @@ namespace Z01.Controllers
             NoteRepository noteRepository = new NoteRepository();
             noteRepository.Delete(title);
 
-            return RedirectToAction(nameof(Index));
+            return returnToIndex();
         }
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        private RedirectToActionResult returnToIndex()
+        {
+            RouteValueDictionary dict = new RouteValueDictionary();
+            dict.Add("chosenCategory", TempData.Peek("chosenCategory"));
+            dict.Add("start_date", Convert.ToDateTime(TempData.Peek("startDate")));
+            dict.Add("last_date", Convert.ToDateTime(TempData.Peek("lastDate")));
+            dict.Add("pageNumber",TempData.Peek("pageNumber"));
+            
+            return RedirectToAction(nameof(Index), dict);
         }
 
     }

@@ -10,5 +10,16 @@
 </form>
 
 <div>
-    <a asp-action="Index">Back to Notes List</a>
+    @Html.ActionLink(
+        "Back to Notes List",
+        "Index",
+        "Notes",
+        new {
+            chosenCategory = TempData["chosenCategory"],
+            start_date = TempData["startDate"],
+            last_date = TempData["lastDate"],
+            pageNumber = TempData["pageNumber"]
+        },
+        null
+    )
 </div>
