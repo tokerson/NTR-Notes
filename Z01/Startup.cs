@@ -33,7 +33,7 @@ namespace Z01
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Notes/Error");
             }
 
             app.UseStaticFiles();
@@ -42,7 +42,7 @@ namespace Z01
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Notes}/{action=Index}/{id?}");
             });
         }
     }
