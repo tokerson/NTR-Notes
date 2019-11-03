@@ -30,6 +30,8 @@ namespace Z01.Models
 
         [AvailableExtension, Required(ErrorMessage = "Extension must be either txt or md")]
         public string extension { get; set; }
+
+        public bool markdown { get; set; }
     }
 
     public class AvailableExtension : ValidationAttribute

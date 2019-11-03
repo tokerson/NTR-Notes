@@ -13,7 +13,7 @@ namespace Z01.Controllers
         HashSet<string> allCategories = new HashSet<string>();
         List<Note> notes;
 
-        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber,string btnSubmit, string chosenCategory = "")
+        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string btnSubmit, string chosenCategory = "")
         {
             NoteRepository repository = new NoteRepository();
             int pageSize = 3;
@@ -30,7 +30,7 @@ namespace Z01.Controllers
             }
 
             ViewData["Categories"] = allCategories;
-            
+
             if (btnSubmit == "Clear")
             {
                 TempData.Clear();
@@ -80,12 +80,41 @@ namespace Z01.Controllers
             return View(note);
         }
 
-        public IActionResult New([Bind("title, categories, date, content, extension")] Note note)
+        public IActionResult New(Note note, string category = "", string btnSubmit = "")
         {
+            category = category ?? "";
+            category = category.Trim();
+
+            switch (btnSubmit)
+            {
+                case "Add":
+                    if (category.Length > 0)
+                    {
+                        note.categories.Add(category);
+                        ModelState.Clear();
+                    }
+                    return View(note);
+                case "Remove":
+                    if (note.categories.Contains(category))
+                    {
+                        note.categories.Remove(category);
+                        ModelState.Clear();
+                    }
+                    return View(note);
+            }
+            
             if (ModelState.IsValid)
             {
-                NoteRepository noteRepository = new NoteRepository();
-                noteRepository.Save(note);
+                try
+                {
+                    NoteRepository noteRepository = new NoteRepository();
+                    noteRepository.Save(note);
+                }
+                catch (Z01.Repositories.DuplicatedNoteTitleException e)
+                {
+                    ModelState.AddModelError("title", e.Message);
+                    return View(note);
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(note);
@@ -93,7 +122,7 @@ namespace Z01.Controllers
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public IActionResult Edit(string old_title, Note note, string category="", string btnSubmit = "")
+        public IActionResult Edit(string old_title, Note note, string category = "", string btnSubmit = "")
         {
             NoteRepository noteRepository = new NoteRepository();
             Note oldNote = noteRepository.FindById(old_title);
@@ -103,29 +132,17 @@ namespace Z01.Controllers
                 return NotFound();
             }
 
-            category = category ?? "";
-            category = category.Trim();
-
-            switch (btnSubmit)
-            {
-                case "Add":
-                    if(category.Length > 0){
-                        note.categories.Add(category);
-                        ModelState.Clear();
-                    }
-                    return View(note);
-                case "Remove":
-                    if (note.categories.Contains(category))
-                    {
-                        note.categories.Remove(category);
-                        ModelState.Clear();  
-                    }
-                    return View(note);
-            }
-
             if (ModelState.IsValid)
             {
-                noteRepository.Update(oldNote, note);
+                try
+                {
+                    noteRepository.Update(oldNote, note);
+                }
+                catch (Z01.Repositories.DuplicatedNoteTitleException e)
+                {
+                    ModelState.AddModelError("title", e.Message);
+                    return View(note);
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(note);

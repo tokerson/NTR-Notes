@@ -10,12 +10,21 @@ namespace Z01.Repositories
 {
     public class NoteRepository : IRepository<Note, string>
     {
-        private const string directory = "./data";
+        private const string directory = "./data/";
+        private List<string> extensions = new List<string>(){".txt", ".md"};
+
         public Note FindById(string title)
         {
             Note note = null;
+            string filePath = "./data/" + title;
+            filePath = getFilePathWithExtension(filePath, extensions);
 
-            using (StreamReader file = new StreamReader("./data/" + title + ".txt"))
+            if (filePath.Equals(""))
+            {
+                return note;
+            }
+
+            using (StreamReader file = new StreamReader(filePath))
             {
                 string line = file.ReadLine();
                 HashSet<string> categories = extractCategories(line);
@@ -59,12 +68,22 @@ namespace Z01.Repositories
 
         public void Update(Note oldNote, Note newNote)
         {
+            if(getFilePathWithExtension(directory + newNote.title, extensions) != "")
+            {
+                throw new DuplicatedNoteTitleException("Note with a title " + newNote.title + " already exists");
+            }
+
             Delete(oldNote.title);
             Save(newNote);
         }
 
         public void Save(Note note)
         {
+            if(getFilePathWithExtension(directory + note.title, extensions) != "")
+            {
+                throw new DuplicatedNoteTitleException("Note with a title " + note.title + " already exists");
+            }
+
             StringBuilder stringBuilder = new StringBuilder("");
             stringBuilder.Append("category: ");
             for (int i = 0; i < note.categories.Count(); ++i)
@@ -78,7 +97,7 @@ namespace Z01.Repositories
             stringBuilder.Append("\ndate: ");
             stringBuilder.Append(note.date.ToString("yyyy/MM/dd") + "\n");
             stringBuilder.Append(note.content);
-            string path = directory + "/" + note.title + "." + note.extension;
+            string path = directory + note.title + "." + note.extension;
             File.WriteAllText(path, stringBuilder.ToString());
         }
 
@@ -109,5 +128,42 @@ namespace Z01.Repositories
             return fileName.Split('/').Last().Split('.')[0];
         }
 
+        private string getFilePathWithExtension(string originalFilePath, List<string> extensions)
+        {
+            string filePath = "";
+
+            foreach (string extension in extensions )
+            {
+                filePath = originalFilePath + extension;
+                if (File.Exists(filePath))
+                {
+                    break;
+                }
+                else 
+                {
+                    filePath = "";
+                }
+            }
+
+            return filePath;
+        }
+
     }
+
+    public class DuplicatedNoteTitleException : Exception
+{
+    public DuplicatedNoteTitleException()
+    {
+    }
+
+    public DuplicatedNoteTitleException(string message)
+        : base(message)
+    {
+    }
+
+    public DuplicatedNoteTitleException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
+}
 }
