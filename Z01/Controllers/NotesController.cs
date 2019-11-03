@@ -10,10 +10,10 @@ namespace Z01.Controllers
 {
     public class NotesController : Controller
     {
-        HashSet<string> allCategories = new HashSet<string>();
-        List<Note> notes;
+        private HashSet<string> allCategories = new HashSet<string>(){"All"};
+        private List<Note> notes;
 
-        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string btnSubmit, string chosenCategory = "")
+        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string btnSubmit, string chosenCategory = "All")
         {
             NoteRepository repository = new NoteRepository();
             int pageSize = 3;
@@ -54,7 +54,7 @@ namespace Z01.Controllers
 
             notes = notes.Where(note => note.date >= start_date && note.date <= last_date).ToList();
 
-            if (chosenCategory != null && chosenCategory != "")
+            if (chosenCategory != null && chosenCategory != "All")
             {
                 notes = notes.Where(note => note.categories.Contains(chosenCategory)).ToList();
             }
@@ -102,7 +102,7 @@ namespace Z01.Controllers
                     }
                     return View(note);
             }
-            
+
             if (ModelState.IsValid)
             {
                 try

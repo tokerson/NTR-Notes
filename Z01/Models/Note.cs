@@ -9,6 +9,7 @@ namespace Z01.Models
     {
         public Note()
         {
+            this.title = "";
             this.date = DateTime.Now;
             this.categories = new List<string>();
         }
