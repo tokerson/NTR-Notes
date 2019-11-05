@@ -13,11 +13,11 @@ namespace Z01.Controllers
     {
         private HashSet<string> allCategories = new HashSet<string>() { "All" };
         private List<Note> notes;
+        private int pageSize = 3;
 
         public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string btnSubmit, string chosenCategory = "All")
         {
             NoteRepository repository = new NoteRepository();
-            int pageSize = 3;
 
             notes = (List<Note>)repository.FindAll();
 
@@ -41,7 +41,6 @@ namespace Z01.Controllers
             if (last_date == DateTime.MinValue)
             {
                 last_date = DateTime.MaxValue;
-                TempData["lastDate"] = last_date;
             }
             else
             {
