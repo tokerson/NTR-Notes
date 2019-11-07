@@ -130,7 +130,7 @@ namespace Z01.Repositories
             date = date.Trim();
 
             //TODO:Add handling exceptions 
-            return DateTime.ParseExact(date, 'yyyy/MM/dd', CultureInfo.InvariantCulture);
+            return DateTime.ParseExact(date, "yyyy/MM/dd", CultureInfo.InvariantCulture);
         }
 
         private string extractNoteTitle(string fileName)
