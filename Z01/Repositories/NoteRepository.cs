@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -129,7 +130,7 @@ namespace Z01.Repositories
             date = date.Trim();
 
             //TODO:Add handling exceptions 
-            return Convert.ToDateTime(date);
+            return DateTime.ParseExact(date, 'yyyy/MM/dd', CultureInfo.InvariantCulture);
         }
 
         private string extractNoteTitle(string fileName)
