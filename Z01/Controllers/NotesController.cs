@@ -50,6 +50,9 @@ namespace Z01.Controllers
             if (start_date != DateTime.MinValue)
             {
                 TempData["startDate"] = start_date.ToString("yyyy-MM-dd");
+            } else if (Convert.ToDateTime(TempData.Peek("startDate")) != DateTime.MinValue)
+            {
+                start_date = Convert.ToDateTime(TempData.Peek("startDate"));
             }
 
             notes = notes.Where(note => note.date >= start_date && note.date <= last_date).ToList();
