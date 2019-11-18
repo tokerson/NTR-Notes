@@ -1,0 +1,26 @@
+@model Z02.Models.Note
+
+<h1>Note Edit</h1>
+
+<form class="form-horizontal" method="post">
+    @Html.ValidationSummary(true)
+    <fieldset>
+        <input type="hidden" id="old_title" name="old_title" value="@Model.title"/>
+        @await Html.PartialAsync("NoteForm", Model)
+    </fieldset>
+</form>
+
+<div>
+    @Html.ActionLink(
+        "Back to Notes List",
+        "Index",
+        "Notes",
+        new {
+            chosenCategory = TempData.Peek("chosenCategory"),
+            start_date = TempData.Peek("startDate"),
+            last_date = TempData.Peek("lastDate"),
+            pageNumber = TempData.Peek("pageNumber")
+        },
+        null
+    )
+</div>

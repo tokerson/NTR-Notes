@@ -1,0 +1,25 @@
+@model Z02.Models.Note
+
+<h1>New note</h1>
+
+<form class="form-horizontal" asp-action="New" method="post">
+    @Html.ValidationSummary(true)
+    <fieldset>
+        @await Html.PartialAsync("NoteForm", Model)
+    </fieldset>
+</form>
+
+<div>
+    @Html.ActionLink(
+        "Back to Notes List",
+        "Index",
+        "Notes",
+        new {
+            chosenCategory = TempData["chosenCategory"],
+            start_date = TempData["startDate"],
+            last_date = TempData["lastDate"],
+            pageNumber = TempData["pageNumber"]
+        },
+        null
+    )
+</div>

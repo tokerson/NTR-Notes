@@ -1,0 +1,83 @@
+@model Z02.PaginatedList<Z02.Models.Note>
+
+@{
+    ViewData["Title"] = "Notes";
+}
+
+@{
+    var categories = (HashSet<string>) ViewData["Categories"];
+}
+
+<h1>Notes index</h1>
+
+<form class="form-inline row" style="padding:10px" method="get">
+    <div class="form-group col-md-7">
+        <span>Start Date:</span>
+        <input class="form-control" name="start_date" value="@TempData["startDate"]" type="date">
+        <span>End Date:</span>
+        <input class="form-control" name="last_date" value="@TempData["lastDate"]" type="date">
+    </div>
+    <div class="form-group col-md-5">
+        
+        <span>Category </span>
+        <select class="form-control" name="chosenCategory">
+            @foreach (var category in @categories)
+            {
+                if(category == (string) TempData["chosenCategory"])
+                {
+                    <option selected>
+                        @Html.DisplayFor(categoryItem => category)
+                    </option> 
+                }
+                else 
+                {
+                    <option >
+                        @Html.DisplayFor(categoryItem => category)
+                    </option>
+                }
+            }
+        </select>
+        <input class="btn btn-primary" type="submit" name="btnSubmit" value="Filter"/>
+        <input class="btn btn-default" type="submit" name="btnSubmit" value="Clear"/>
+    </div>
+</form>
+<table class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>
+                Date
+            </th>
+            <th >
+                Title
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+            @foreach (var item in Model) {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.date)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.title)
+                            </td>
+                            <td>
+                                <a class="btn btn-default" asp-action="Edit" asp-route-title="@item.title">Edit</a>
+                                <a class="btn btn-default" asp-action="Delete" asp-route-title="@item.title">Delete</a>
+                            </td>
+                        </tr>
+            }
+    </tbody>
+</table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div class="row">
+    <a class="btn col-sm-offset-1 btn-primary" asp-action="New">New</a> 
+    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex - 1)" class="btn btn-default col-sm-offset-5 col-md-offset-6 @prevDisabled">Prev Page</a>
+    <span>@Model.PageIndex / @Model.TotalPages</span>
+    <a asp-action="Index" asp-route-pageNumber="@(Model.PageIndex + 1)" class="btn btn-default @nextDisabled">Next Page</a>
+</div>
