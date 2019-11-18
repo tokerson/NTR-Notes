@@ -2,16 +2,16 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Z02
+namespace Z02.Model
 {
     [Table("Category", Schema = "tokarzewski")]
     public class Category
     {
-        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryID { get; set; }
         [Required]
-        [MaxLength(64)]
+        [StringLength(64)]        
         public string Title { get; set; }
-        // public ICollection<NoteCategory> NoteCategories { get; set; }
+        public ICollection<NoteCategory> NoteCategories { get; set; }
     }
 }

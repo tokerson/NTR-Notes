@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Z02
+namespace Z02.Model
 {
     [Table("Note", Schema = "tokarzewski")]
     public class Note
     {
-        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int NoteID { get; set; }
         [Required]
         public DateTime NoteDate { get; set; }
         [Required]
-        [MaxLength(64)]
+        [StringLength(64)]        
         public string Title { get; set; }
         public string Description { get; set; }
-        // public ICollection<NoteCategory> NoteCategories { get; set; }
+        public ICollection<NoteCategory> NoteCategories { get; set; }
     }
 }
