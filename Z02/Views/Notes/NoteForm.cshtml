@@ -1,57 +1,20 @@
-@model Z02.Models.Note
+@model Z02.Model.Note
 
 <div class="form-group">
     <label class=" control-label" for="titleInput">Title of the note:</label>
-    @Html.EditorFor(model => model.title, new { htmlAttributes = new { @class="form-control", @id="titleInput"} })
-    @Html.ValidationMessageFor(model => model.title)
-</div>
-<div class="form-group">
-    <div class="col-sm-12 checkbox">
-            @Html.EditorFor(model => model.markdown, new { htmlAttributes = new {@id="markdown"}})
-            <label class="control-label">
-                Markdown
-            </label>
-    </div>
+    @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class="form-control", @id="titleInput"} })
+    @Html.ValidationMessageFor(model => model.Title)
 </div>
 
 <div class="form-group">
     <label class="control-label" for="textarea">Content of the note: </label>
-    <textarea class="form-control col-sm-6" asp-for="content" rows="8" id="textarea"></textarea>
+    <textarea class="form-control col-sm-6" asp-for="Description" rows="8" id="textarea"></textarea>
 </div>
 
 <div class="form-group">
-    @Html.LabelFor(model => model.date, htmlAttributes: new { @class = "control-label" })
+    @Html.LabelFor(model => model.NoteDate, htmlAttributes: new { @class = "control-label" })
     <div>
-        @Html.EditorFor(model => model.date, new { htmlAttributes = new { @class = "form-control" } })
-    </div>
-</div>
-
-<div class="container" style="padding:0">
-    <div class="row">
-        <div class="col-lg-2">
-            <label for="category-list">In categories:</label>
-        </div>
-        <div id="category-list" class="col-lg-5" style="height:150px;max-width:300px;overflow:auto;margin:20px 0px;">
-            <table class="table">
-                <tbody>
-                    @for (int i = 0; i < Model.categories.Count(); ++i) {
-                        <tr>
-                            <th>
-                                @Html.TextBoxFor(item => Model.categories[i], new { @class = "form-control", @readonly = "readonly" })
-                            </th>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
-        <form class="form-inline col-lg-5">
-            <div class="form-group">
-                <label for="category-input">Category name:</label>
-                <input type="text" id="category-input" name="category"/>
-                <input type="submit" class="btn btn-default" name="btnSubmit" value="Add"/>
-                <input type="submit" class="btn btn-default" name="btnSubmit" value="Remove"/>
-            </div>
-        </form>
+        @Html.EditorFor(model => model.NoteDate, new { htmlAttributes = new { @class = "form-control" } })
     </div>
 </div>
 

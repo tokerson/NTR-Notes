@@ -1,11 +1,11 @@
-@model Z02.Models.Note
+@model Z02.Model.Note
 
 <h1>Note Edit</h1>
 
 <form class="form-horizontal" method="post">
     @Html.ValidationSummary(true)
     <fieldset>
-        <input type="hidden" id="old_title" name="old_title" value="@Model.title"/>
+        <input type="hidden" id="old_title" name="old_title" value="@Model.Description"/>
         @await Html.PartialAsync("NoteForm", Model)
     </fieldset>
 </form>

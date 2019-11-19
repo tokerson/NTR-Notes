@@ -5,78 +5,90 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Z02.Repositories;
-using Z02.Models;
+using Z02.Model;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Z02.Controllers
 {
     public class NotesController : Controller
     {
         private HashSet<string> allCategories = new HashSet<string>() { "All" };
-        private List<Note> notes;
         private int pageSize = 3;
 
-        public IActionResult Index(DateTime start_date, DateTime last_date, int? pageNumber, string btnSubmit, string chosenCategory = "All")
+        public async Task<IActionResult> Index(DateTime start_date, DateTime last_date, int? pageNumber, string btnSubmit, string chosenCategory = "All")
         {
-            NoteRepository repository = new NoteRepository();
 
-            notes = (List<Note>)repository.FindAll();
+            using(var context = new DBContext()) {
+                var categories = context.Categories.AsNoTracking();
+                var notes = context.Notes.AsNoTracking();
 
-
-            foreach (Note note in notes)
-            {
-                foreach (string category in note.categories)
-                {
-                    allCategories.Add(category);
-                }
+                ViewData["Categories"] = await categories.ToListAsync();
+                
+                // return View(await notes.ToListAsync());
+                return View(new PaginatedList<Note>(await notes.ToListAsync(), pageNumber ?? 1, pageSize));
             }
+            // NoteRepository repository = new NoteRepository();
 
-            ViewData["Categories"] = allCategories;
+            // notes = (List<Note>)repository.FindAll();
 
-            if (btnSubmit == "Clear")
-            {
-                TempData.Clear();
-                return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
-            }
 
-            if (last_date == DateTime.MinValue)
-            {
-                last_date = DateTime.MaxValue;
-            }
-            else
-            {
-                TempData["lastDate"] = last_date.ToString("yyyy-MM-dd");
-            }
+            // foreach (Note note in notes)
+            // {
+            //     foreach (string category in note.categories)
+            //     {
+            //         allCategories.Add(category);
+            //     }
+            // }
 
-            if (start_date != DateTime.MinValue)
-            {
-                TempData["startDate"] = start_date.ToString("yyyy-MM-dd");
-            } else if (Convert.ToDateTime(TempData.Peek("startDate")) != DateTime.MinValue)
-            {
-                start_date = Convert.ToDateTime(TempData.Peek("startDate"));
-            }
+            // ViewData["Categories"] = new SelectList();
 
-            notes = notes.Where(note => note.date >= start_date && note.date <= last_date).ToList();
+            // if (btnSubmit == "Clear")
+            // {
+            //     TempData.Clear();
+            //     return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
+            // }
 
-            if (chosenCategory != null && chosenCategory != "All")
-            {
-                notes = notes.Where(note => note.categories.Contains(chosenCategory)).ToList();
-            }
+            // if (last_date == DateTime.MinValue)
+            // {
+            //     last_date = DateTime.MaxValue;
+            // }
+            // else
+            // {
+            //     TempData["lastDate"] = last_date.ToString("yyyy-MM-dd");
+            // }
 
-            TempData["chosenCategory"] = chosenCategory;
-            TempData["pageNumber"] = pageNumber ?? 1;
-            TempData.Keep("chosenCategory");
-            TempData.Keep("startDate");
-            TempData.Keep("lastDate");
-            TempData.Keep("pageNumber");
+            // if (start_date != DateTime.MinValue)
+            // {
+            //     TempData["startDate"] = start_date.ToString("yyyy-MM-dd");
+            // } else if (Convert.ToDateTime(TempData.Peek("startDate")) != DateTime.MinValue)
+            // {
+            //     start_date = Convert.ToDateTime(TempData.Peek("startDate"));
+            // }
 
-            return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
+            // notes = notes.Where(note => note.date >= start_date && note.date <= last_date).ToList();
+
+            // if (chosenCategory != null && chosenCategory != "All")
+            // {
+            //     notes = notes.Where(note => note.categories.Contains(chosenCategory)).ToList();
+            // }
+
+            // TempData["chosenCategory"] = chosenCategory;
+            // TempData["pageNumber"] = pageNumber ?? 1;
+            // TempData.Keep("chosenCategory");
+            // TempData.Keep("startDate");
+            // TempData.Keep("lastDate");
+            // TempData.Keep("pageNumber");
+
+            // return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
         }
 
         public IActionResult Edit(string title)
         {
-            NoteRepository repository = new NoteRepository();
-            Note note = repository.FindById(title);
+            // NoteRepository repository = new NoteRepository();
+            // Note note = repository.FindById(title);
 
+            Note note = new Note();
             if (note == null)
             {
                 return NotFound();
@@ -90,39 +102,39 @@ namespace Z02.Controllers
             category = category ?? "";
             category = category.Trim();
 
-            switch (btnSubmit)
-            {
-                case "Add":
-                    if (category.Length > 0)
-                    {
-                        note.categories.Add(category);
-                        ModelState.Clear();
-                    }
-                    return View(note);
-                case "Remove":
-                    if (note.categories.Contains(category))
-                    {
-                        note.categories.Remove(category);
-                        ModelState.Clear();
-                    }
-                    return View(note);
-            }
+            // switch (btnSubmit)
+            // {
+            //     case "Add":
+            //         if (category.Length > 0)
+            //         {
+            //             note.categories.Add(category);
+            //             ModelState.Clear();
+            //         }
+            //         return View(note);
+            //     case "Remove":
+            //         if (note.categories.Contains(category))
+            //         {
+            //             note.categories.Remove(category);
+            //             ModelState.Clear();
+            //         }
+            //         return View(note);
+            // }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    NoteRepository noteRepository = new NoteRepository();
-                    noteRepository.Save(note);
-                }
-                catch (Z02.Repositories.DuplicatedNoteTitleException e)
-                {
-                    ModelState.AddModelError("title", e.Message);
-                    return View(note);
-                }
+            // if (ModelState.IsValid)
+            // {
+            //     try
+            //     {
+            //         NoteRepository noteRepository = new NoteRepository();
+            //         noteRepository.Save(note);
+            //     }
+            //     catch (Z02.Repositories.DuplicatedNoteTitleException e)
+            //     {
+            //         ModelState.AddModelError("title", e.Message);
+            //         return View(note);
+            //     }
                 
-                return returnToIndex();
-            }
+            //     return returnToIndex();
+            // }
             return View(note);
         }
 
@@ -130,55 +142,55 @@ namespace Z02.Controllers
         // [ValidateAntiForgeryToken]
         public IActionResult Edit(string old_title, Note note, string category = "", string btnSubmit = "")
         {
-            NoteRepository noteRepository = new NoteRepository();
-            Note oldNote = noteRepository.FindById(old_title);
+            // NoteRepository noteRepository = new NoteRepository();
+            // Note oldNote = noteRepository.FindById(old_title);
 
-            if (oldNote == null)
-            {
-                return NotFound();
-            }
+            // if (oldNote == null)
+            // {
+            //     return NotFound();
+            // }
 
             category = category ?? "";
             category = category.Trim();
 
-            switch (btnSubmit)
-            {
-                case "Add":
-                    if (category.Length > 0)
-                    {
-                        note.categories.Add(category);
-                        ModelState.Clear();
-                    }
-                    return View(note);
-                case "Remove":
-                    if (note.categories.Contains(category))
-                    {
-                        note.categories.Remove(category);
-                        ModelState.Clear();
-                    }
-                    return View(note);
-            }
+            // switch (btnSubmit)
+            // {
+            //     case "Add":
+            //         if (category.Length > 0)
+            //         {
+            //             note.categories.Add(category);
+            //             ModelState.Clear();
+            //         }
+            //         return View(note);
+            //     case "Remove":
+            //         if (note.categories.Contains(category))
+            //         {
+            //             note.categories.Remove(category);
+            //             ModelState.Clear();
+            //         }
+            //         return View(note);
+            // }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    noteRepository.Update(oldNote, note);
-                }
-                catch (Z02.Repositories.DuplicatedNoteTitleException e)
-                {
-                    ModelState.AddModelError("title", e.Message);
-                    return View(note);
-                }
-                return returnToIndex();
-            }
+            // if (ModelState.IsValid)
+            // {
+            //     try
+            //     {
+            //         noteRepository.Update(oldNote, note);
+            //     }
+            //     catch (Z02.Repositories.DuplicatedNoteTitleException e)
+            //     {
+            //         ModelState.AddModelError("title", e.Message);
+            //         return View(note);
+            //     }
+            //     return returnToIndex();
+            // }
             return View(note);
         }
 
         public IActionResult Delete(string title)
         {
-            NoteRepository noteRepository = new NoteRepository();
-            noteRepository.Delete(title);
+            // NoteRepository noteRepository = new NoteRepository();
+            // noteRepository.Delete(title);
 
             return returnToIndex();
         }
