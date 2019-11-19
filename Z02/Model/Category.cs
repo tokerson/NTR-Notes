@@ -9,8 +9,7 @@ namespace Z02.Model
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryID { get; set; }
-        [Required]
-        [StringLength(64)]        
+        [MaxLength(64)]        
         public string Title { get; set; }
         public ICollection<NoteCategory> NoteCategories { get; set; }
     }

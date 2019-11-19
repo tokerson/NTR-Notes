@@ -17,7 +17,7 @@ namespace Z02.Migrations
                 {
                     CategoryID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Title = table.Column<string>(maxLength: 64, nullable: false)
+                    Title = table.Column<string>(maxLength: 64, nullable: true)
                 },
                 constraints: table =>
                 {

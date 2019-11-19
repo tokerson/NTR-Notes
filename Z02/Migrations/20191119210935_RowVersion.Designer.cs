@@ -10,8 +10,8 @@ using Z02.Model;
 namespace Z02.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20191118205458_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20191119210935_RowVersion")]
+    partial class RowVersion
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,7 +29,6 @@ namespace Z02.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("nvarchar(64)")
                         .HasMaxLength(64);
 
@@ -50,6 +49,11 @@ namespace Z02.Migrations
 
                     b.Property<DateTime>("NoteDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
 
                     b.Property<string>("Title")
                         .IsRequired()
