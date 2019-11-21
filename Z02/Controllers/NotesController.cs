@@ -80,12 +80,25 @@ namespace Z02.Controllers
             }
         }
 
+        public IActionResult New() {
+            var note = new Note();
+            note.NoteCategories = new List<NoteCategory>();
+            return View(note);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> New(Note note, string category = "", string btnSubmit = "")
         {
             category = category ?? "";
             category = category.Trim();
             try
             {
+                switch(btnSubmit){
+                    case "Add":
+                        break;
+                    case "Remove":
+                        break;
+                }
                 if (ModelState.IsValid)
                 {
                     using(var context = new DBContext()){
