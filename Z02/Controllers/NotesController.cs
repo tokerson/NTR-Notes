@@ -108,47 +108,46 @@ namespace Z02.Controllers
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Note note, string category = "", string btnSubmit = "")
+        public async Task<IActionResult> Edit(int? id, byte[] rowVersion, Note note, string category = "", string btnSubmit = "")
         {
-            if (id != note.NoteID)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            category = category ?? "";
-            category = category.Trim();
+            using(var context = new DBContext()){
+                var noteToUpdate = await context.Notes.Include(i => i.NoteCategories).FirstOrDefaultAsync(m => m.NoteID == id);
 
-            // switch (btnSubmit)
-            // {
-            //     case "Add":
-            //         if (category.Length > 0)
-            //         {
-            //             note.categories.Add(category);
-            //             ModelState.Clear();
-            //         }
-            //         return View(note);
-            //     case "Remove":
-            //         if (note.categories.Contains(category))
-            //         {
-            //             note.categories.Remove(category);
-            //             ModelState.Clear();
-            //         }
-            //         return View(note);
-            // }
+                category = category ?? "";
+                category = category.Trim();
 
-            if (ModelState.IsValid)
-            {
-                using(var context = new DBContext()){
-                    try {
-                        context.Update(note);
-                        await context.SaveChangesAsync();
-                        return RedirectToAction(nameof(Index));
-                    } catch(DbUpdateException e) {
-                        ModelState.AddModelError("Title", e.Message);
-                        return View(note);
-                    }
+                if(noteToUpdate == null){
+                    ModelState.AddModelError(string.Empty,
+                        "Unable to save changes. The department was deleted by another user.");
+                    return returnToIndex();
                 }
+
+                context.Entry(noteToUpdate).Property("RowVersion").OriginalValue = rowVersion;
+
+                if(await TryUpdateModelAsync<Note>(
+                        noteToUpdate,
+                        "",
+                        n => n.Title, n => n.Description, n => n.NoteCategories, n => n.NoteDate
+                    ))
+                    {
+                        try
+                        {
+                            await context.SaveChangesAsync();
+                            return returnToIndex();
+                        } catch (DbUpdateConcurrencyException ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+
+                    }
+
             }
+
             return View(note);
         }
 
