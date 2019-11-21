@@ -75,8 +75,8 @@ namespace Z02.Controllers
             }
 
             using(var context = new DBContext()){
-                var note = context.Notes.FirstOrDefaultAsync(note => note.NoteID == id);
-                return View(await note);
+                var note = await context.Notes.Include(i => i.NoteCategories).ThenInclude(noteCategories => noteCategories.Category).FirstOrDefaultAsync(note => note.NoteID == id);
+                return View(note);
             }
         }
 
@@ -108,7 +108,7 @@ namespace Z02.Controllers
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int? id, byte[] rowVersion, Note note, string category = "", string btnSubmit = "")
+        public async Task<IActionResult> Edit(int? id, byte[] rowVersion, string category = "", string btnSubmit = "")
         {
             if (id == null)
             {
@@ -116,7 +116,7 @@ namespace Z02.Controllers
             }
 
             using(var context = new DBContext()){
-                var noteToUpdate = await context.Notes.Include(i => i.NoteCategories).FirstOrDefaultAsync(m => m.NoteID == id);
+                var noteToUpdate = await context.Notes.Include(i => i.NoteCategories).ThenInclude(noteCategories => noteCategories.Category).FirstOrDefaultAsync(note => note.NoteID == id);
 
                 category = category ?? "";
                 category = category.Trim();
@@ -128,6 +128,33 @@ namespace Z02.Controllers
                 }
 
                 context.Entry(noteToUpdate).Property("RowVersion").OriginalValue = rowVersion;
+
+                switch (btnSubmit)
+                {
+                    case "Add":
+                        if (category.Length > 0)
+                        {
+                            var occurances = context.Categories.Where(c => c.Title == category).ToList();
+                            if(occurances.Count == 0) {
+                                context.Categories.Add(new Category{ Title = category});
+                                await context.SaveChangesAsync();
+                            }
+                            var categoryObj = await context.Categories.FirstOrDefaultAsync(c => c.Title == category);
+                            if(context.NoteCategories.Where(nc => nc.Category.Title == category && nc.NoteID == noteToUpdate.NoteID).ToList().Count == 0){
+                                noteToUpdate.NoteCategories.Add(new NoteCategory{ CategoryID = categoryObj.CategoryID, NoteID = noteToUpdate.NoteID });
+                                await context.SaveChangesAsync();
+                            }
+                            ModelState.Clear();
+                        }
+                        return View(noteToUpdate);
+                    case "Remove":
+                        // if (noteToUpdate.NoteCategories.Contains(category))
+                        // {
+                        //     noteToUpdate.NoteCategories.Remove(category);
+                        //     ModelState.Clear();
+                        // }
+                        return View(noteToUpdate);
+                }
 
                 if(await TryUpdateModelAsync<Note>(
                         noteToUpdate,
@@ -146,9 +173,8 @@ namespace Z02.Controllers
 
                     }
 
+            return View(noteToUpdate);
             }
-
-            return View(note);
         }
 
         public async Task<IActionResult> Delete(int? id)
