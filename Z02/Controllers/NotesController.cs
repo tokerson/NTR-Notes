@@ -129,17 +129,19 @@ namespace Z02.Controllers
 
                 context.Entry(noteToUpdate).Property("RowVersion").OriginalValue = rowVersion;
 
-                switch (btnSubmit)
+                if (btnSubmit != "")
                 {
-                    case "Add":
+                    var occurances = context.Categories.Where(c => c.Title == category).ToList();
+                    var categoryObj = await context.Categories.FirstOrDefaultAsync(c => c.Title == category);
+
+
+                    if(btnSubmit == "Add") {
                         if (category.Length > 0)
                         {
-                            var occurances = context.Categories.Where(c => c.Title == category).ToList();
                             if(occurances.Count == 0) {
                                 context.Categories.Add(new Category{ Title = category});
                                 await context.SaveChangesAsync();
                             }
-                            var categoryObj = await context.Categories.FirstOrDefaultAsync(c => c.Title == category);
                             if(context.NoteCategories.Where(nc => nc.Category.Title == category && nc.NoteID == noteToUpdate.NoteID).ToList().Count == 0){
                                 noteToUpdate.NoteCategories.Add(new NoteCategory{ CategoryID = categoryObj.CategoryID, NoteID = noteToUpdate.NoteID });
                                 await context.SaveChangesAsync();
@@ -147,13 +149,23 @@ namespace Z02.Controllers
                             ModelState.Clear();
                         }
                         return View(noteToUpdate);
-                    case "Remove":
-                        // if (noteToUpdate.NoteCategories.Contains(category))
-                        // {
-                        //     noteToUpdate.NoteCategories.Remove(category);
-                        //     ModelState.Clear();
-                        // }
+                    } else if (btnSubmit == "Remove") {
+                        if (occurances.Count > 0)
+                        {
+                            if(context.NoteCategories.Where(nc => nc.Category.Title == category && nc.NoteID == noteToUpdate.NoteID).ToList().Count == 0) {
+
+                            } else {
+                                noteToUpdate.NoteCategories.Remove(new NoteCategory{ CategoryID = categoryObj.CategoryID, NoteID = noteToUpdate.NoteID });
+                                await context.SaveChangesAsync();
+                                if(occurances.Count == 1) {
+                                    context.Categories.Remove(categoryObj);
+                                    await context.SaveChangesAsync();
+                                }
+                            }
+                            ModelState.Clear();
+                        }
                         return View(noteToUpdate);
+                    }
                 }
 
                 if(await TryUpdateModelAsync<Note>(
