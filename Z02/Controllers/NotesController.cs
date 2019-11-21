@@ -141,6 +141,7 @@ namespace Z02.Controllers
                             if(occurances.Count == 0) {
                                 context.Categories.Add(new Category{ Title = category});
                                 await context.SaveChangesAsync();
+                                categoryObj = await context.Categories.FirstOrDefaultAsync(c => c.Title == category);
                             }
                             if(context.NoteCategories.Where(nc => nc.Category.Title == category && nc.NoteID == noteToUpdate.NoteID).ToList().Count == 0){
                                 noteToUpdate.NoteCategories.Add(new NoteCategory{ CategoryID = categoryObj.CategoryID, NoteID = noteToUpdate.NoteID });
