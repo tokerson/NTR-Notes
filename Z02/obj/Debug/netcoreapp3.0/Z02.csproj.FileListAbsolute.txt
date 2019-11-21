@@ -20,8 +20,6 @@
 /home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Z02.TagHelpers.input.cache
 /home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Z02.TagHelpers.output.cache
 /home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Z02.RazorCoreGenerate.cache
-/home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Razor/Views/Home/Index.cshtml.g.cs
-/home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Razor/Views/Home/Privacy.cshtml.g.cs
 /home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Razor/Views/Shared/Error.cshtml.g.cs
 /home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Razor/Views/Shared/_Layout.cshtml.g.cs
 /home/tokarz/Documents/Studia/NTR-Notes/Z02/obj/Debug/netcoreapp3.0/Razor/Views/Shared/_ValidationScriptsPartial.cshtml.g.cs

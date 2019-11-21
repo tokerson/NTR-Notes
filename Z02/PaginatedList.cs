@@ -13,7 +13,7 @@ namespace Z02
         {
             PageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(items.Count / (double)pageSize);
-            if (TotalPages == 0) 
+            if (TotalPages == 0)
             {
                 TotalPages = 1;
             }

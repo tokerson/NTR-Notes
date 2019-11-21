@@ -21,134 +21,99 @@ namespace Z02.Controllers
 
             using(var context = new DBContext()) {
                 var categories = context.Categories.AsNoTracking();
-                var notes = context.Notes.AsNoTracking();
 
                 ViewData["Categories"] = await categories.ToListAsync();
-                
-                // return View(await notes.ToListAsync());
-                return View(new PaginatedList<Note>(await notes.ToListAsync(), pageNumber ?? 1, pageSize));
+
+            if (btnSubmit == "Clear")
+            {
+                TempData.Clear();
+                return View(new PaginatedList<Note>(await context.Notes.AsNoTracking().ToListAsync(), pageNumber ?? 1, pageSize));
             }
-            // NoteRepository repository = new NoteRepository();
 
-            // notes = (List<Note>)repository.FindAll();
+            if (last_date == DateTime.MinValue)
+            {
+                last_date = DateTime.MaxValue;
+            }
+            else
+            {
+                TempData["lastDate"] = last_date.ToString("yyyy-MM-dd");
+            }
 
+            if (start_date != DateTime.MinValue)
+            {
+                TempData["startDate"] = start_date.ToString("yyyy-MM-dd");
+            } else if (Convert.ToDateTime(TempData.Peek("startDate")) != DateTime.MinValue)
+            {
+                start_date = Convert.ToDateTime(TempData.Peek("startDate"));
+            }
 
-            // foreach (Note note in notes)
-            // {
-            //     foreach (string category in note.categories)
-            //     {
-            //         allCategories.Add(category);
-            //     }
-            // }
+            var notes = context.Notes.Where(note => note.NoteDate >= start_date && note.NoteDate <= last_date);
 
-            // ViewData["Categories"] = new SelectList();
+            if (chosenCategory != null && chosenCategory != "All")
+            {
 
-            // if (btnSubmit == "Clear")
-            // {
-            //     TempData.Clear();
-            //     return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
-            // }
+                // notes = notes.Where(note => note.NoteCategories.Contains(chosenCategory)).ToList();
+            }
 
-            // if (last_date == DateTime.MinValue)
-            // {
-            //     last_date = DateTime.MaxValue;
-            // }
-            // else
-            // {
-            //     TempData["lastDate"] = last_date.ToString("yyyy-MM-dd");
-            // }
+            TempData["chosenCategory"] = chosenCategory;
+            TempData["pageNumber"] = pageNumber ?? 1;
+            TempData.Keep("chosenCategory");
+            TempData.Keep("startDate");
+            TempData.Keep("lastDate");
+            TempData.Keep("pageNumber");
 
-            // if (start_date != DateTime.MinValue)
-            // {
-            //     TempData["startDate"] = start_date.ToString("yyyy-MM-dd");
-            // } else if (Convert.ToDateTime(TempData.Peek("startDate")) != DateTime.MinValue)
-            // {
-            //     start_date = Convert.ToDateTime(TempData.Peek("startDate"));
-            // }
-
-            // notes = notes.Where(note => note.date >= start_date && note.date <= last_date).ToList();
-
-            // if (chosenCategory != null && chosenCategory != "All")
-            // {
-            //     notes = notes.Where(note => note.categories.Contains(chosenCategory)).ToList();
-            // }
-
-            // TempData["chosenCategory"] = chosenCategory;
-            // TempData["pageNumber"] = pageNumber ?? 1;
-            // TempData.Keep("chosenCategory");
-            // TempData.Keep("startDate");
-            // TempData.Keep("lastDate");
-            // TempData.Keep("pageNumber");
-
-            // return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
+            return View(new PaginatedList<Note>(await notes.ToListAsync(), pageNumber ?? 1, pageSize));
+            }
         }
 
-        public IActionResult Edit(string title)
+        public async Task<IActionResult> Edit(int? id)
         {
-            // NoteRepository repository = new NoteRepository();
-            // Note note = repository.FindById(title);
 
-            Note note = new Note();
-            if (note == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            return View(note);
+            using(var context = new DBContext()){
+                var note = context.Notes.FirstOrDefaultAsync(note => note.NoteID == id);
+                return View(await note);
+            }
         }
 
-        public IActionResult New(Note note, string category = "", string btnSubmit = "")
+        public async Task<IActionResult> New(Note note, string category = "", string btnSubmit = "")
         {
             category = category ?? "";
             category = category.Trim();
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    using(var context = new DBContext()){
+                        context.Add(note);
+                        await context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+            catch (DbUpdateException e)
+            {
+                //Log the error (uncomment ex variable name and write a log.
+                ModelState.AddModelError("", "Unable to save changes. " +
+                    "Try again, and if the problem persists " +
+                    "see your system administrator.");
+            }
 
-            // switch (btnSubmit)
-            // {
-            //     case "Add":
-            //         if (category.Length > 0)
-            //         {
-            //             note.categories.Add(category);
-            //             ModelState.Clear();
-            //         }
-            //         return View(note);
-            //     case "Remove":
-            //         if (note.categories.Contains(category))
-            //         {
-            //             note.categories.Remove(category);
-            //             ModelState.Clear();
-            //         }
-            //         return View(note);
-            // }
-
-            // if (ModelState.IsValid)
-            // {
-            //     try
-            //     {
-            //         NoteRepository noteRepository = new NoteRepository();
-            //         noteRepository.Save(note);
-            //     }
-            //     catch (Z02.Repositories.DuplicatedNoteTitleException e)
-            //     {
-            //         ModelState.AddModelError("title", e.Message);
-            //         return View(note);
-            //     }
-                
-            //     return returnToIndex();
-            // }
             return View(note);
         }
 
         [HttpPost]
         // [ValidateAntiForgeryToken]
-        public IActionResult Edit(string old_title, Note note, string category = "", string btnSubmit = "")
+        public async Task<IActionResult> Edit(int id, Note note, string category = "", string btnSubmit = "")
         {
-            // NoteRepository noteRepository = new NoteRepository();
-            // Note oldNote = noteRepository.FindById(old_title);
-
-            // if (oldNote == null)
-            // {
-            //     return NotFound();
-            // }
+            if (id != note.NoteID)
+            {
+                return NotFound();
+            }
 
             category = category ?? "";
             category = category.Trim();
@@ -171,27 +136,38 @@ namespace Z02.Controllers
             //         return View(note);
             // }
 
-            // if (ModelState.IsValid)
-            // {
-            //     try
-            //     {
-            //         noteRepository.Update(oldNote, note);
-            //     }
-            //     catch (Z02.Repositories.DuplicatedNoteTitleException e)
-            //     {
-            //         ModelState.AddModelError("title", e.Message);
-            //         return View(note);
-            //     }
-            //     return returnToIndex();
-            // }
+            if (ModelState.IsValid)
+            {
+                using(var context = new DBContext()){
+                    try {
+                        context.Update(note);
+                        await context.SaveChangesAsync();
+                        return RedirectToAction(nameof(Index));
+                    } catch(DbUpdateException e) {
+                        ModelState.AddModelError("Title", e.Message);
+                        return View(note);
+                    }
+                }
+            }
             return View(note);
         }
 
-        public IActionResult Delete(string title)
+        public async Task<IActionResult> Delete(int? id)
         {
-            // NoteRepository noteRepository = new NoteRepository();
-            // noteRepository.Delete(title);
+            if(id == null){
+                return NotFound();
+            }
 
+            using(var context = new DBContext()){
+                try {
+                    var note = await context.Notes.FirstOrDefaultAsync(note => note.NoteID == id);
+                    context.Notes.Attach(note);
+                    context.Notes.Remove(note);
+                    await context.SaveChangesAsync();
+                } catch(DbUpdateConcurrencyException e) {
+                    ModelState.AddModelError("Title","Something went wrong with deleting");
+                }
+            }
             return returnToIndex();
         }
         public IActionResult Error()
@@ -206,7 +182,7 @@ namespace Z02.Controllers
             dict.Add("start_date", Convert.ToDateTime(TempData.Peek("startDate")));
             dict.Add("last_date", Convert.ToDateTime(TempData.Peek("lastDate")));
             dict.Add("pageNumber",TempData.Peek("pageNumber"));
-            
+
             return RedirectToAction(nameof(Index), dict);
         }
 

@@ -53,8 +53,8 @@
                                 @Html.DisplayFor(modelItem => item.Title)
                             </td>
                             <td>
-                                <a class="btn btn-default" asp-action="Edit" asp-route-title="@item.Title">Edit</a>
-                                <a class="btn btn-default" asp-action="Delete" asp-route-title="@item.Title">Delete</a>
+                                <a class="btn btn-default" asp-action="Edit" asp-route-id="@item.NoteID">Edit</a>
+                                <a class="btn btn-default" asp-action="Delete" asp-route-id="@item.NoteID">Delete</a>
                             </td>
                         </tr>
             }
