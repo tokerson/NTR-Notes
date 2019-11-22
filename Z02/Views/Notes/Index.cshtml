@@ -18,14 +18,22 @@
         <input class="form-control" name="last_date" value="@TempData["lastDate"]" type="date">
     </div>
     <div class="form-group col-md-5">
-        
         <span>Category </span>
         <select class="form-control" name="chosenCategory">
             @foreach (var category in @categories)
             {
-                <option >
-                    @Html.DisplayFor(categoryItem => category.Title)
-                </option>   
+                if(category.Title == (string) TempData["chosenCategory"])
+                {
+                    <option selected>
+                        @Html.DisplayFor(categoryItem => category.Title)
+                    </option>
+                }
+                else
+                {
+                    <option >
+                        @Html.DisplayFor(categoryItem => category.Title)
+                    </option>
+                }
             }
         </select>
         <input class="btn btn-primary" type="submit" name="btnSubmit" value="Filter"/>
