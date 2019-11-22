@@ -5,7 +5,7 @@
     @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class="form-control", @id="titleInput"} })
     @Html.ValidationMessageFor(model => model.Title)
 </div>
-
+@Html.HiddenFor(m => m.NoteCategories);
 <div class="form-group">
     <label class="control-label" for="textarea">Content of the note: </label>
     <textarea class="form-control col-sm-6" asp-for="Description" rows="8" id="textarea"></textarea>
@@ -26,10 +26,12 @@
         <div id="category-list" class="col-lg-5" style="height:150px;max-width:300px;overflow:auto;margin:20px 0px;">
             <table class="table">
                 <tbody>
-                    @for (int i = 0; i < Model.NoteCategories.Count(); ++i) {
+                    @{var NoteCategories = Model.NoteCategories.ToList().Select(nc => nc.Category.Title);}
+                    @for (int i = 0; i < Model.NoteCategories.Count; ++i) {
                         <tr>
                             <th>
-                                @Html.TextBoxFor(item => Model.NoteCategories.ToArray()[i].Category.Title, new { @class = "form-control", @readonly = "readonly" })
+                                <input type="hidden" name="categories[@i]" value="@Model.NoteCategories.ToList()[i].Category.Title" />
+                                @Html.TextBoxFor(item => Model.NoteCategories.ToList()[i].Category.Title, new { @class = "form-control", @readonly = "readonly" })
                             </th>
                         </tr>
                     }

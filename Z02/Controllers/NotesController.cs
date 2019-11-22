@@ -91,7 +91,7 @@ namespace Z02.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> New(Note note, string category = "", string btnSubmit = "")
+        public async Task<IActionResult> New(Note note,String[] categories, string category = "", string btnSubmit = "")
         {
             category = category ?? "";
             category = category.Trim();
@@ -99,9 +99,17 @@ namespace Z02.Controllers
             {
                 switch(btnSubmit){
                     case "Add":
-                        break;
+                        if(note.NoteCategories == null) {
+                            note.NoteCategories = new List<NoteCategory>();
+                        }
+                        note.NoteCategories.Add(new NoteCategory{Category=new Category{Title=category}});
+                        Array.ForEach(categories, c => note.NoteCategories.Add(new NoteCategory { Category = new Category{Title=c}}));
+                        ModelState.Clear();
+                        return View(note);
                     case "Remove":
-                        break;
+                        note.NoteCategories.Remove(new NoteCategory{NoteID=note.NoteID, Category=new Category{Title=category}});
+                        ModelState.Clear();
+                        return View(note);
                 }
                 if (ModelState.IsValid)
                 {
