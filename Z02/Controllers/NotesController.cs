@@ -82,6 +82,7 @@ namespace Z02.Controllers
         public IActionResult New() {
             var note = new Note();
             note.NoteCategories = new List<NoteCategory>();
+            note.NoteDate = DateTime.Now;
             return View(note);
         }
 
@@ -119,7 +120,6 @@ namespace Z02.Controllers
         }
 
         [HttpPost]
-        // [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, byte[] rowVersion, string category = "", string btnSubmit = "")
         {
             if (id == null)

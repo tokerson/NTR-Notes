@@ -11,6 +11,7 @@ namespace Z02.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int NoteID { get; set; }
         [Required]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime NoteDate { get; set; }
         [Required]
         [MaxLength(64)]
