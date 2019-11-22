@@ -193,11 +193,23 @@ namespace Z02.Controllers
                             return returnToIndex();
                         } catch (DbUpdateConcurrencyException ex)
                         {
-                            Console.WriteLine(ex.Message);
+                            var exceptionEntry = ex.Entries.Single();
+                            var databaseEntry = exceptionEntry.GetDatabaseValues();
+                            if(databaseEntry == null)
+                            {
+                                ModelState.AddModelError(string.Empty, "Unable to save changes. The Note was deleted by another user.");
+                            } else {
+                                ModelState.AddModelError(string.Empty, "The record you attempted to edit "
+                                + "was modified by another user after you got the original value. The "
+                                + "edit operation was canceled and the current values in the database "
+                                + "have been displayed. If you still want to edit this record, click "
+                                + "the Save button again. Otherwise click the Back to List hyperlink.");
+                                noteToUpdate.RowVersion = (byte[])noteToUpdate.RowVersion;
+                                ModelState.Remove("RowVersion");
+                            }
                         }
 
                     }
-
             return View(noteToUpdate);
             }
         }
