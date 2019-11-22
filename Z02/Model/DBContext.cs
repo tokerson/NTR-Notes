@@ -26,6 +26,12 @@ namespace Z02.Model
                 .HasOne(bc => bc.Category)
                 .WithMany(c => c.NoteCategories)
                 .HasForeignKey(bc => bc.CategoryID);
+            modelBuilder.Entity<Note>()
+                .HasIndex(n => n.Title)
+                .IsUnique();
+            modelBuilder.Entity<Category>()
+                .HasIndex(c => c.Title)
+                .IsUnique();
         }
     }
 }

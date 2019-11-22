@@ -47,12 +47,11 @@ namespace Z02.Controllers
                 start_date = Convert.ToDateTime(TempData.Peek("startDate"));
             }
 
-            var notes = context.Notes.Where(note => note.NoteDate >= start_date && note.NoteDate <= last_date);
+            var notes = await context.Notes.Include(i => i.NoteCategories).ThenInclude(noteCategories => noteCategories.Category).ToListAsync();
 
             if (chosenCategory != null && chosenCategory != "All")
             {
-
-                // notes = notes.Where(note => note.NoteCategories.Contains(chosenCategory)).ToList();
+                notes = await context.Notes.Where(n => n.NoteCategories.Any(c => c.Category.Title == chosenCategory)).ToListAsync();
             }
 
             TempData["chosenCategory"] = chosenCategory;
@@ -62,7 +61,7 @@ namespace Z02.Controllers
             TempData.Keep("lastDate");
             TempData.Keep("pageNumber");
 
-            return View(new PaginatedList<Note>(await notes.ToListAsync(), pageNumber ?? 1, pageSize));
+            return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
             }
         }
 

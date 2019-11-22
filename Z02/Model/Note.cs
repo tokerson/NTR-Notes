@@ -13,7 +13,7 @@ namespace Z02.Model
         [Required]
         public DateTime NoteDate { get; set; }
         [Required]
-        [MaxLength(64)]        
+        [MaxLength(64)]
         public string Title { get; set; }
         public string Description { get; set; }
 
