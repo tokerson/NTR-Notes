@@ -8,6 +8,7 @@ using Z02.Repositories;
 using Z02.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using LinqKit;
 
 namespace Z02.Controllers
 {
@@ -21,6 +22,7 @@ namespace Z02.Controllers
 
             using(var context = new DBContext()) {
                 var categories = context.Categories.AsNoTracking();
+                var predicate = PredicateBuilder.New<Note>();
 
                 ViewData["Categories"] = await categories.ToListAsync();
 
@@ -47,12 +49,14 @@ namespace Z02.Controllers
                 start_date = Convert.ToDateTime(TempData.Peek("startDate"));
             }
 
-            var notes = await context.Notes.Include(i => i.NoteCategories).ThenInclude(noteCategories => noteCategories.Category).ToListAsync();
+            predicate = predicate.And(n => n.NoteCategories.Any(nc => nc.Note.NoteDate <= last_date && nc.Note.NoteDate >= start_date));
 
             if (chosenCategory != null && chosenCategory != "All")
             {
-                notes = await context.Notes.Where(n => n.NoteCategories.Any(c => c.Category.Title == chosenCategory)).ToListAsync();
+                predicate = predicate.And(n => n.NoteCategories.Any(c => c.Category.Title == chosenCategory));
             }
+
+            var notes = await context.Notes.Where(predicate).ToListAsync();
 
             TempData["chosenCategory"] = chosenCategory;
             TempData["pageNumber"] = pageNumber ?? 1;

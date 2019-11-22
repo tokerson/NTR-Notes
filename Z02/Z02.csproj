@@ -10,6 +10,7 @@
 
 
   <ItemGroup>
+    <PackageReference Include="LINQKit.Core" Version="1.1.16" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
