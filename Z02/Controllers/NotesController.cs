@@ -22,15 +22,8 @@ namespace Z02.Controllers
 
             using(var context = new DBContext()) {
                 var categories = context.Categories.AsNoTracking();
-                var predicate = PredicateBuilder.New<Note>();
-
+                var notes = context.Notes.AsQueryable();
                 ViewData["Categories"] = await categories.ToListAsync();
-
-            if (btnSubmit == "Clear")
-            {
-                TempData.Clear();
-                return View(new PaginatedList<Note>(await context.Notes.AsNoTracking().ToListAsync(), pageNumber ?? 1, pageSize));
-            }
 
             if (last_date == DateTime.MinValue)
             {
@@ -49,14 +42,19 @@ namespace Z02.Controllers
                 start_date = Convert.ToDateTime(TempData.Peek("startDate"));
             }
 
-            predicate = predicate.And(n => n.NoteCategories.Any(nc => nc.Note.NoteDate <= last_date && nc.Note.NoteDate >= start_date));
+            if (btnSubmit == "Clear")
+            {
+                TempData.Clear();
+                var Notes = from n in context.Notes select n;
+                return View(await PaginatedList<Note>.CreateAsync(Notes.AsNoTracking(), pageNumber ?? 1, pageSize));
+            } 
 
+            notes = notes.Where(n => n.NoteDate <= last_date && n.NoteDate >= start_date);
+            
             if (chosenCategory != null && chosenCategory != "All")
             {
-                predicate = predicate.And(n => n.NoteCategories.Any(c => c.Category.Title == chosenCategory));
+                notes = notes.Where(n => n.NoteCategories.Any(c => c.Category.Title == chosenCategory));
             }
-
-            var notes = await context.Notes.Where(predicate).ToListAsync();
 
             TempData["chosenCategory"] = chosenCategory;
             TempData["pageNumber"] = pageNumber ?? 1;
@@ -65,7 +63,7 @@ namespace Z02.Controllers
             TempData.Keep("lastDate");
             TempData.Keep("pageNumber");
 
-            return View(new PaginatedList<Note>(notes, pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<Note>.CreateAsync(notes.AsNoTracking(), pageNumber ?? 1, pageSize));
             }
         }
 
@@ -115,7 +113,8 @@ namespace Z02.Controllers
                 if (ModelState.IsValid)
                 {
                     using(var context = new DBContext()){
-                        context.Add(note);
+                        context.Notes.Add(note);
+                        context.Categories.Add(new Category{Title=category});
                         if(note.NoteCategories == null) {
                             note.NoteCategories = new List<NoteCategory>();
                         }
@@ -123,13 +122,12 @@ namespace Z02.Controllers
                             try {
                                 context.Categories.Add(new Category{Title = c});
                                 context.SaveChanges();
-                                context.Notes.Add(note);
-                                context.SaveChanges();
                             } catch (DbUpdateException e) {
                                 Console.WriteLine(e.Message);
                             }
-                            note.NoteCategories.Add(new NoteCategory { Note=note,Category = context.Categories.FirstOrDefault(cat => cat.Title == c)});});
-                            await context.SaveChangesAsync();
+                        });
+                        // note.NoteCategories.Add(new NoteCategory { Note=note,Category = context.Categories.FirstOrDefault(cat => cat.Title == c)});
+                        // await context.SaveChangesAsync();
                         return RedirectToAction(nameof(Index));
                     }
                 }
