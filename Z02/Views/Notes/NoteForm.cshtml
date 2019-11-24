@@ -5,7 +5,7 @@
     @Html.EditorFor(model => model.Title, new { htmlAttributes = new { @class="form-control", @id="titleInput"} })
     @Html.ValidationMessageFor(model => model.Title)
 </div>
-@Html.HiddenFor(m => m.NoteCategories);
+@Html.HiddenFor(m => m.NoteCategories)
 <div class="form-group">
     <label class="control-label" for="textarea">Content of the note: </label>
     <textarea class="form-control col-sm-6" asp-for="Description" rows="8" id="textarea"></textarea>

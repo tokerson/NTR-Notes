@@ -119,12 +119,16 @@ namespace Z02.Controllers
                         context.Notes.Add(note);
                         Array.ForEach(categories, c => {
                             try {
+                                //create 2 variants, one for new category and another for existing category
                                 Category cat = new Category {Title = c};
                                 context.Categories.Add(cat);
-                                note.NoteCategories.Add(new NoteCategory { Note=note,Category = cat});
+                                note.NoteCategories.Add(new NoteCategory { Note=note,Category =
+                                cat});
                                 context.SaveChanges();
                             } catch (DbUpdateException e) {
-                                Console.WriteLine(e.Message);
+                                ModelState.AddModelError("", "Unable to save changes. " +
+                                    "Try again, and if the problem persists " +
+                                    "see your system administrator.");
                             }
                         });
                         await context.SaveChangesAsync();
@@ -245,13 +249,23 @@ namespace Z02.Controllers
             }
 
             using(var context = new DBContext()){
-                try {
-                    var note = await context.Notes.FirstOrDefaultAsync(note => note.NoteID == id);
-                    context.Notes.Attach(note);
-                    context.Notes.Remove(note);
-                    await context.SaveChangesAsync();
-                } catch(DbUpdateConcurrencyException e) {
-                    ModelState.AddModelError("Title","Something went wrong with deleting");
+                using(var transaction = context.Database.BeginTransaction()){
+                    try {
+                            var note = await context.Notes.FirstOrDefaultAsync(note => note.NoteID == id);
+                            Category[] categories = note.NoteCategories.Select(nc => nc.Category).ToArray();
+                            context.Notes.Attach(note);
+                            context.Notes.Remove(note);
+                            // remove all categories not used by any other category
+                            Array.ForEach(categories, c => {
+                                if(context.NoteCategories.Where(nc => nc.Category == c).ToList().Count == 0){
+                                    context.Categories.Remove(c);
+                                }
+                            });
+                            context.SaveChanges();
+                            transaction.Commit();
+                    } catch(DbUpdateConcurrencyException) {
+                        ModelState.AddModelError("Title","Something went wrong with deleting");
+                    }
                 }
             }
             return returnToIndex();
