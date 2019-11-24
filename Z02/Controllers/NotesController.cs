@@ -208,7 +208,7 @@ namespace Z02.Controllers
                 if(await TryUpdateModelAsync<Note>(
                         noteToUpdate,
                         "",
-                        n => n.Title, n => n.Description, n => n.NoteCategories, n => n.NoteDate
+                        n => n.Title, n => n.Description, n => n.NoteDate
                     ))
                     {
                         try
