@@ -107,7 +107,8 @@ namespace Z02.Controllers
                         ModelState.Clear();
                         return View(note);
                     case "Remove":
-                        note.NoteCategories.Remove(new NoteCategory{NoteID=note.NoteID, Category=new Category{Title=category}});
+                        var remainingCategories = categories.Where(c => c != category).ToArray();
+                        Array.ForEach(remainingCategories, c => note.NoteCategories.Add(new NoteCategory { Category = new Category{Title=c}}));
                         ModelState.Clear();
                         return View(note);
                 }
@@ -115,7 +116,20 @@ namespace Z02.Controllers
                 {
                     using(var context = new DBContext()){
                         context.Add(note);
-                        await context.SaveChangesAsync();
+                        if(note.NoteCategories == null) {
+                            note.NoteCategories = new List<NoteCategory>();
+                        }
+                        Array.ForEach(categories, c => {
+                            try {
+                                context.Categories.Add(new Category{Title = c});
+                                context.SaveChanges();
+                                context.Notes.Add(note);
+                                context.SaveChanges();
+                            } catch (DbUpdateException e) {
+                                Console.WriteLine(e.Message);
+                            }
+                            note.NoteCategories.Add(new NoteCategory { Note=note,Category = context.Categories.FirstOrDefault(cat => cat.Title == c)});});
+                            await context.SaveChangesAsync();
                         return RedirectToAction(nameof(Index));
                     }
                 }
