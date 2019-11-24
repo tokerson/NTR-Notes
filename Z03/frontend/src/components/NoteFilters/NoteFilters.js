@@ -6,8 +6,8 @@ import Row from 'react-bootstrap/Row';
 export default function NoteFilters() {
     return (
         <Row>
-            <Button variant="dark">Fitler</Button>
-            <Button variant="dark">Clear</Button>
+          <Button variant="dark">Fitler</Button>
+          <Button variant="dark">Clear</Button>
         </Row>
-    )
+    );
 }
