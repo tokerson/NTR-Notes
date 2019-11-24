@@ -1,10 +1,13 @@
-import React from 'react'
+import React from 'react';
+import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
+
 
 export default function NoteFilters() {
     return (
-        <div>
-            <button>Fitler</button>
-            <button>Clear</button>
-        </div>
+        <Row>
+            <Button variant="dark">Fitler</Button>
+            <Button variant="dark">Clear</Button>
+        </Row>
     )
 }
