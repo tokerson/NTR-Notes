@@ -113,21 +113,21 @@ namespace Z02.Controllers
                 if (ModelState.IsValid)
                 {
                     using(var context = new DBContext()){
-                        context.Notes.Add(note);
-                        context.Categories.Add(new Category{Title=category});
                         if(note.NoteCategories == null) {
                             note.NoteCategories = new List<NoteCategory>();
                         }
+                        context.Notes.Add(note);
                         Array.ForEach(categories, c => {
                             try {
-                                context.Categories.Add(new Category{Title = c});
+                                Category cat = new Category {Title = c};
+                                context.Categories.Add(cat);
+                                note.NoteCategories.Add(new NoteCategory { Note=note,Category = cat});
                                 context.SaveChanges();
                             } catch (DbUpdateException e) {
                                 Console.WriteLine(e.Message);
                             }
                         });
-                        // note.NoteCategories.Add(new NoteCategory { Note=note,Category = context.Categories.FirstOrDefault(cat => cat.Title == c)});
-                        // await context.SaveChangesAsync();
+                        await context.SaveChangesAsync();
                         return RedirectToAction(nameof(Index));
                     }
                 }
