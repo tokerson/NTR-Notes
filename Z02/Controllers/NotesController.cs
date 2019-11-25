@@ -120,10 +120,21 @@ namespace Z02.Controllers
                         Array.ForEach(categories, c => {
                             try {
                                 //create 2 variants, one for new category and another for existing category
-                                Category cat = new Category {Title = c};
-                                context.Categories.Add(cat);
-                                note.NoteCategories.Add(new NoteCategory { Note=note,Category =
-                                cat});
+                                Category cat;
+                                using(var transaction = context.Database.BeginTransaction()){
+                                    var occurances = context.Categories.Where(categoryObj => categoryObj.Title == c).ToList();
+                                    if(occurances.Count() == 0) {
+                                        cat = new Category {Title = c};
+                                        context.Categories.Add(cat);
+                                    } else {
+                                        cat = occurances.FirstOrDefault();
+                                    }
+                                    context.SaveChanges();
+                                    transaction.Commit();
+                                }
+                                note.NoteCategories.Add(new NoteCategory {
+                                    NoteID=note.NoteID,
+                                    CategoryID = cat.CategoryID});
                                 context.SaveChanges();
                             } catch (DbUpdateException e) {
                                 ModelState.AddModelError("", "Unable to save changes. " +
