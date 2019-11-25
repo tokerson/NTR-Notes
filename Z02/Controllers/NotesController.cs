@@ -251,7 +251,7 @@ namespace Z02.Controllers
             using(var context = new DBContext()){
                 using(var transaction = context.Database.BeginTransaction()){
                     try {
-                            var note = await context.Notes.FirstOrDefaultAsync(note => note.NoteID == id);
+                            var note = await context.Notes.Include(i => i.NoteCategories).ThenInclude(noteCategories => noteCategories.Category).FirstOrDefaultAsync(note => note.NoteID == id);
                             Category[] categories = note.NoteCategories.Select(nc => nc.Category).ToArray();
                             context.Notes.Attach(note);
                             context.Notes.Remove(note);
