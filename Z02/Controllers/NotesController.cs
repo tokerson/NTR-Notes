@@ -131,12 +131,12 @@ namespace Z02.Controllers
                                         cat = occurances.FirstOrDefault();
                                     }
                                     context.SaveChanges();
-                                    transaction.Commit();
-                                }
-                                note.NoteCategories.Add(new NoteCategory {
+                                    note.NoteCategories.Add(new NoteCategory {
                                     NoteID=note.NoteID,
                                     CategoryID = cat.CategoryID});
-                                context.SaveChanges();
+                                    context.SaveChanges();
+                                    transaction.Commit();
+                                }
                             } catch (DbUpdateException e) {
                                 ModelState.AddModelError("", "Unable to save changes. " +
                                     "Try again, and if the problem persists " +
