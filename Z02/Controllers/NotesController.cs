@@ -9,6 +9,7 @@ using Z02.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using LinqKit;
+using Microsoft.Data.SqlClient;
 
 namespace Z02.Controllers
 {
@@ -246,6 +247,9 @@ namespace Z02.Controllers
                                 noteToUpdate.RowVersion = (byte[])noteToUpdate.RowVersion;
                                 ModelState.Remove("RowVersion");
                             }
+                        } catch (DbUpdateException ex)
+                        {
+                            ModelState.AddModelError(string.Empty, ex.InnerException.Message);
                         }
 
                     }
