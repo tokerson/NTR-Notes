@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-using Z02.Repositories;
 using Z02.Model;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -50,7 +49,7 @@ namespace Z02.Controllers
                 return View(await PaginatedList<Note>.CreateAsync(Notes.AsNoTracking(), pageNumber ?? 1, pageSize));
             } 
 
-            notes = notes.Where(n => n.NoteDate <= last_date && n.NoteDate >= start_date);
+            notes = notes.Where(n => n.NoteDate.Date <= last_date && n.NoteDate.Date  >= start_date);
             
             if (chosenCategory != null && chosenCategory != "All")
             {
@@ -175,7 +174,7 @@ namespace Z02.Controllers
 
                 if(noteToUpdate == null){
                     ModelState.AddModelError(string.Empty,
-                        "Unable to save changes. The department was deleted by another user.");
+                        "Unable to save changes. The Note was deleted by another user.");
                     return returnToIndex();
                 }
 

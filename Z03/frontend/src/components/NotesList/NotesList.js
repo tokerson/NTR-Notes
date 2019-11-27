@@ -18,7 +18,7 @@ export default function NotesList({ notes }) {
               <td>{noteDate}</td>
               <td>{title}</td>
               <td>
-                <Link to={`/notes/${id}`}>
+                <Link to={`/notes/edit/:id`}>
                   <Button variant="outline-dark">Edit</Button>
                 </Link>
                 <Button variant="dark">Delete</Button>
