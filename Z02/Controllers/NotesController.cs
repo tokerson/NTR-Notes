@@ -143,7 +143,7 @@ namespace Z02.Controllers
                             }
                         });
                         await context.SaveChangesAsync();
-                        return RedirectToAction(nameof(Index));
+                        return returnToIndex();
                     }
                 }
             }
@@ -173,8 +173,8 @@ namespace Z02.Controllers
                 category = category.Trim();
 
                 if(noteToUpdate == null){
-                    ModelState.AddModelError(string.Empty,
-                        "Unable to save changes. The Note was deleted by another user.");
+                    TempData["Error"] = "Unable to save changes. The Note was deleted by another user.";
+                    TempData.Keep("Error");
                     return returnToIndex();
                 }
 
@@ -270,6 +270,7 @@ namespace Z02.Controllers
                             context.Notes.Attach(note);
                             context.Notes.Remove(note);
                             // remove all categories not used by any other category
+                            context.SaveChanges();
                             Array.ForEach(categories, c => {
                                 if(context.NoteCategories.Where(nc => nc.Category == c).ToList().Count == 0){
                                     context.Categories.Remove(c);
