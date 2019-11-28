@@ -67,7 +67,6 @@ export default function NoteEditForm(props) {
 
   return (
     <div>
-      <h1>Note Edit Form</h1>
       <Formik
         initialValues={{ title, content, categories, date, category, markdown }}
         validate={validate}

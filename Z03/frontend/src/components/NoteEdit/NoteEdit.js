@@ -8,7 +8,6 @@ export default function NoteEdit() {
         <div>
             <h1>Edit Note</h1>
             <NoteEditForm />
-            <Button></Button>
         </div>
     )
 }
