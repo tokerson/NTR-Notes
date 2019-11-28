@@ -18,7 +18,7 @@ class NotesContainer extends React.Component {
   render() {
     return (
       <div>
-        <NoteFilters />
+        <NoteFilters style={{marginTop:"20px"}} />
         <NotesList notes={notes}/>
       </div>
     );

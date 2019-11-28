@@ -2,15 +2,18 @@ import React from 'react';
 import { Formik } from 'formik';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
 
 import CategoryList from './CategoryList';
 
 export default function NoteEditForm(props) {
   const title = props.title ? props.title : '';
   const content = props.content ? props.content : '';
+  const markdown = props.markdown ? props.markdown : false;
   const date = props.date ? props.date : moment().format('YYYY-MM-DD');
   const category = '';
   const [chosenCategory, setChosenCategory] = React.useState('');
@@ -54,19 +57,19 @@ export default function NoteEditForm(props) {
   };
 
   const handleRemoveCategory = () => {
-    setCategories(categories.filter(({title}) => (title !== chosenCategory)));
+    setCategories(categories.filter(({ title }) => title !== chosenCategory));
   };
 
   const handleChooseCategory = category => {
     setChosenCategory(category);
     setRemoveEnabled(true);
-  }
+  };
 
   return (
     <div>
       <h1>Note Edit Form</h1>
       <Formik
-        initialValues={{ title, content, categories, date, category }}
+        initialValues={{ title, content, categories, date, category, markdown }}
         validate={validate}
         onSubmit={handleOnSubmit}
       >
@@ -90,6 +93,16 @@ export default function NoteEditForm(props) {
               />
               {errors.title && touched.title && errors.title}
             </Form.Group>
+            <Form.Check controlId="formNoteMarkdown">
+              <Form.Check.Input
+                type="checkbox"
+                name="markdown"
+                onChange={handleChange}
+                value={values.markdown}
+              />
+              {errors.title && touched.title && errors.title}
+              <Form.Label>Markdown</Form.Label>
+            </Form.Check>
             <Form.Group controlId="formNoteContent">
               <Form.Label>Note's Content:</Form.Label>
               <Form.Control
@@ -114,7 +127,10 @@ export default function NoteEditForm(props) {
               <Form.Label>Note's Categories:</Form.Label>
               <Row>
                 <Col>
-                  <CategoryList categories={categories} chooseCategory={handleChooseCategory} />
+                  <CategoryList
+                    categories={categories}
+                    chooseCategory={handleChooseCategory}
+                  />
                 </Col>
                 <Col>
                   <Form.Control
@@ -135,7 +151,11 @@ export default function NoteEditForm(props) {
                     >
                       Add
                     </Button>
-                    <Button variant="secondary" onClick={handleRemoveCategory} disabled={!removeEnabled}>
+                    <Button
+                      variant="secondary"
+                      onClick={handleRemoveCategory}
+                      disabled={!removeEnabled}
+                    >
                       Remove
                     </Button>
                   </Row>
@@ -148,6 +168,11 @@ export default function NoteEditForm(props) {
           </Form>
         )}
       </Formik>
+      <Link to="/">
+        <Button style={{ marginTop: '10px' }} variant="light">
+          Back to Notes List
+        </Button>
+      </Link>
     </div>
   );
 }

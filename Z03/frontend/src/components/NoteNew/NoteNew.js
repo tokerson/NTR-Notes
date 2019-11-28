@@ -4,7 +4,7 @@ import NoteEditForm from '../NoteEdit/NoteEditForm/NoteEditForm'
 export default function NoteNew() {
     return (
         <div>
-        <h1>Note New </h1>
+        <h1>New Note</h1>
             <NoteEditForm />
         </div>
     )

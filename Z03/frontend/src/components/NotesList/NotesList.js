@@ -1,12 +1,14 @@
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
+import Row from 'react-bootstrap/Row';
 import { Link } from 'react-router-dom';
 
 export default function NotesList({ notes }) {
   return (
-    <div>
+    <Row>
       <Table striped bordered hover>
+        <tbody>
         <tr>
           <th>Date</th>
           <th>Title</th>
@@ -25,10 +27,11 @@ export default function NotesList({ notes }) {
               </td>
             </tr>
           ))}
+          </tbody>
       </Table>
       <Link to="/notes/new">
         <Button>New</Button>
       </Link>
-    </div>
+    </Row>
   );
 }
