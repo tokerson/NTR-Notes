@@ -15,9 +15,9 @@ export default function NotesList({ notes }) {
           <th></th>
         </tr>
         {notes &&
-          notes.map(({ id, noteDate, title }) => (
-            <tr key={id}>
-              <td>{noteDate}</td>
+          notes.map(({date, title }) => (
+            <tr key={title}>
+              <td>{date}</td>
               <td>{title}</td>
               <td>
                 <Link to={`/notes/edit/:id`}>

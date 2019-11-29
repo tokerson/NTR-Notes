@@ -5,11 +5,11 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-export default function NoteFilters() {
-  const [categories, setCategories] = React.useState(['All', 'Sport', 'NTR']);
+const NoteFilters = (props) => {
   const [category, setCategory] = React.useState('All');
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
+  const categories = ['All', ...props.categories];
 
   const handleOnSubmit = (values, { setSubmitting }) => {
     setTimeout(() => {
@@ -74,3 +74,4 @@ export default function NoteFilters() {
     </Row>
   );
 }
+export default NoteFilters;
