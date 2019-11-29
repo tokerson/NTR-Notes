@@ -8,6 +8,24 @@ exports.get_notes = (req, res) => {
   res.send({ data: data});
 };
 
+exports.post_note = (req, res, next) => {
+  let note = new Note(
+    req.body.title,
+    req.body.date,
+    req.body.categories,
+    req.body.markdown,
+    req.body.content,
+  );
+
+  const noteRepository = new NoteRepository();
+  try {
+    noteRepository.save(note);
+  } catch (err) {
+    return res.send(err.message);
+  }
+  res.send("Success");
+}
+
 exports.get_all_trainings = (req, res) => {
   Training.find({}, function(err, trainings) {
     trainings = trainings.map(training => {
@@ -24,7 +42,6 @@ exports.get_all_trainings = (req, res) => {
 
 exports.get_all_exercises = (req, res) => {
    Training.distinct('exercises.name').exec((err, result)=>{
-       console.log(result);
        res.send(result);
     });
 };

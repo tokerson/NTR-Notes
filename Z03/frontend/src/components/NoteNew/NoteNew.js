@@ -5,7 +5,7 @@ export default function NoteNew() {
     return (
         <div>
         <h1>New Note</h1>
-            <NoteEditForm />
+            <NoteEditForm mode="new"/>
         </div>
     )
 }

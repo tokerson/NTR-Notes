@@ -11,6 +11,7 @@ app.use(bodyParser.json());
 const PORT = 8000;
 
 router.get('/notes', notesController.get_notes);
+router.post('/notes', notesController.post_note);
 
 app.use('/api', router);
 

@@ -7,7 +7,7 @@ export default function NoteEdit() {
     return (
         <div>
             <h1>Edit Note</h1>
-            <NoteEditForm />
+            <NoteEditForm mode="edit"/>
         </div>
     )
 }

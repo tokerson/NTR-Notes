@@ -1,6 +1,7 @@
 const path = require('path');
 const directoryPath = path.join(__dirname, '../data');
 const fs = require('fs');
+const moment = require('moment');
 
 let Note = require('../models/Note');
 
@@ -39,6 +40,39 @@ module.exports = class NoteRepository {
       note.date = lines[1].split(':')[1].trim();
       return note;
     });
-    return { categories: this.categories, notes };
+    return {
+      categories: this.categories.map(category => ({
+        title: category,
+      })),
+      notes,
+    };
+  }
+
+  save(note) {
+    if (this.noteExists(note)) {
+      throw new Error('File with this title already exists');
+    }
+
+    const extension = note.markdown ? '.md' : '.txt';
+    let fileContent = 'category: ';
+    note.categories.forEach(({ title }) => (fileContent += `${title}, `));
+    fileContent += '\ndate: ';
+    fileContent += moment(note.date).format('YYYY/MM/DD') + '\n';
+    fileContent += note.content;
+    fs.writeFile(
+      `${directoryPath}/${note.title}${extension}`,
+      fileContent,
+      err => {
+        if (err) throw err;
+        console.log('saved');
+      }
+    );
+  }
+
+  noteExists(note) {
+    return (
+      fs.existsSync(`${directoryPath}/${note.title}.txt`) ||
+      fs.existsSync(`${directoryPath}/${note.title}.md`)
+    );
   }
 };

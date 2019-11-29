@@ -2,26 +2,28 @@ import React from 'react';
 import { Formik } from 'formik';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import moment from 'moment';
-import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { Link, withRouter } from 'react-router-dom';
+import { API } from '../../../constants';
 
 import CategoryList from './CategoryList';
 
-export default function NoteEditForm(props) {
-  const title = props.title ? props.title : '';
-  const content = props.content ? props.content : '';
-  const markdown = props.markdown ? props.markdown : false;
-  const date = props.date ? props.date : moment().format('YYYY-MM-DD');
+
+const NoteEditForm = (props) => {
+  const title = props.title || '';
+  const content = props.content || '';
+  const markdown = props.markdown || false;
+  const date = props.date || moment().format('YYYY-MM-DD');
   const category = '';
   const [chosenCategory, setChosenCategory] = React.useState('');
   const [removeEnabled, setRemoveEnabled] = React.useState(false);
-  const [categories, setCategories] = React.useState([
-    { title: 'Sport' },
-    { title: 'New' },
-  ]);
+  const [categories, setCategories] = React.useState(props.categories || []);
+  const [errorMessage, setErrorMessage] = React.useState('');
 
   const validate = values => {
     const errors = {};
@@ -32,10 +34,28 @@ export default function NoteEditForm(props) {
   };
 
   const handleOnSubmit = (values, { setSubmitting }) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-    }, 400);
+    const date = moment(values.date).isValid ? moment(values.date) : moment();
+    if (props.mode === 'new') {
+      axios
+        .post(`${API}/notes`, {
+          title: values.title,
+          content: values.content,
+          markdown: values.markdown,
+          date: date,
+          categories: categories,
+        })
+        .then(res => {
+          setSubmitting(false);
+          if (res.data !== 'Success') {
+            setErrorMessage(res.data);
+          } else {
+            props.history.push('/');
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
   };
 
   const handleAddCategory = category => {
@@ -67,6 +87,7 @@ export default function NoteEditForm(props) {
 
   return (
     <div>
+      {errorMessage && <Alert variant='danger'>{errorMessage}</Alert>}
       <Formik
         initialValues={{ title, content, categories, date, category, markdown }}
         validate={validate}
@@ -96,6 +117,7 @@ export default function NoteEditForm(props) {
               <Form.Check.Input
                 type="checkbox"
                 name="markdown"
+                checked={values.markdown}
                 onChange={handleChange}
                 value={values.markdown}
               />
@@ -175,3 +197,5 @@ export default function NoteEditForm(props) {
     </div>
   );
 }
+
+export default (withRouter)(NoteEditForm);

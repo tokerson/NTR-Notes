@@ -10,11 +10,10 @@ const NoteFilters = props => {
   const [category, setCategory] = React.useState('All');
   const [startDate, setStartDate] = React.useState('');
   const [endDate, setEndDate] = React.useState('');
-  const categories = ['All', ...props.categories];
+  const categories = ['All', ...props.categories.map(({ title }) => title)];
 
-  const handleOnSubmit = (values, { setSubmitting }) => {
-    const { filteredNotes, setFilteredNotes, notes } = props;
-    console.log('submit');
+  const handleOnSubmit = values => {
+    const { setFilteredNotes, notes } = props;
     let filtered = [...notes];
     const start = moment(values.startDate);
     const end = moment(values.endDate);
@@ -35,8 +34,6 @@ const NoteFilters = props => {
 
   return (
     <Row style={{ margin: '20px 0' }}>
-      {console.log('render')}
-      {console.log(startDate)}
       <Formik
         enableReinitialize
         initialValues={{ startDate, endDate, category }}
@@ -47,7 +44,6 @@ const NoteFilters = props => {
           handleChange,
           handleSubmit,
           submitForm,
-          isSubmitting,
           setFieldValue,
         }) => (
           <Form onSubmit={handleSubmit} inline>

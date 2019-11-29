@@ -22,7 +22,7 @@ const NotesContainer = () => {
 
   return (
     <div>
-      <NoteFilters style={{ marginTop: '20px' }} notes={notes} filteredNotes={filteredNotes} setFilteredNotes={setFilteredNotes} categories={categories} />
+      <NoteFilters style={{ marginTop: '20px' }} notes={notes} setFilteredNotes={setFilteredNotes} categories={categories} />
       <NotesList notes={filteredNotes} />
     </div>
   );
