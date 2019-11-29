@@ -5,17 +5,18 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-const NoteFilters = (props) => {
+const NoteFilters = props => {
   const [category, setCategory] = React.useState('All');
   const [startDate, setStartDate] = React.useState(null);
   const [endDate, setEndDate] = React.useState(null);
   const categories = ['All', ...props.categories];
 
   const handleOnSubmit = (values, { setSubmitting }) => {
-    setTimeout(() => {
-      alert(JSON.stringify(values, null, 2));
-      setSubmitting(false);
-    }, 400);
+    category === 'All'
+      ? props.setFilteredNotes(props.notes)
+      : props.setFilteredNotes(
+          props.notes.filter(note => note.categories.includes(category))
+        );
   };
 
   return (
@@ -27,10 +28,9 @@ const NoteFilters = (props) => {
       >
         {({
           values,
-          //   errors,
-          //   touched,
           handleChange,
           handleSubmit,
+          submitForm,
           isSubmitting,
         }) => (
           <Form onSubmit={handleSubmit} inline>
@@ -59,13 +59,23 @@ const NoteFilters = (props) => {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
-                {categories.map((category) => (<Dropdown.Item key={category} onClick={() => setCategory(category)}>{category}</Dropdown.Item>))}
+                {categories.map(category => (
+                  <Dropdown.Item
+                    key={category}
+                    onClick={() => setCategory(category)}
+                  >
+                    {category}
+                  </Dropdown.Item>
+                ))}
               </Dropdown.Menu>
             </Dropdown>
             <Button type="submit" variant="dark" style={{ margin: '0 10px' }}>
               Fitler
             </Button>
-            <Button type="submit" variant="dark">
+            <Button onClick={() => {
+              setCategory('All');
+              submitForm();
+            }} variant="dark">
               Clear
             </Button>
           </Form>
@@ -73,5 +83,5 @@ const NoteFilters = (props) => {
       </Formik>
     </Row>
   );
-}
+};
 export default NoteFilters;
