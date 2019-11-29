@@ -4,26 +4,42 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
+import moment from 'moment';
 
 const NoteFilters = props => {
   const [category, setCategory] = React.useState('All');
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
+  const [startDate, setStartDate] = React.useState('');
+  const [endDate, setEndDate] = React.useState('');
   const categories = ['All', ...props.categories];
 
   const handleOnSubmit = (values, { setSubmitting }) => {
+    const { filteredNotes, setFilteredNotes, notes } = props;
+    console.log('submit');
+    let filtered = [...notes];
+    const start = moment(values.startDate);
+    const end = moment(values.endDate);
+    if (start.isValid()) {
+      filtered = filtered.filter(note =>
+        moment(note.date).isSameOrAfter(start)
+      );
+    }
+    if (end.isValid()) {
+      filtered = filtered.filter(note => moment(note.date).isSameOrBefore(end));
+    }
     category === 'All'
-      ? props.setFilteredNotes(props.notes)
-      : props.setFilteredNotes(
-          props.notes.filter(note => note.categories.includes(category))
+      ? setFilteredNotes(filtered)
+      : setFilteredNotes(
+          filtered.filter(note => note.categories.includes(category))
         );
   };
 
   return (
     <Row style={{ margin: '20px 0' }}>
+      {console.log('render')}
+      {console.log(startDate)}
       <Formik
+        enableReinitialize
         initialValues={{ startDate, endDate, category }}
-        // validate={validate}
         onSubmit={handleOnSubmit}
       >
         {({
@@ -32,6 +48,7 @@ const NoteFilters = props => {
           handleSubmit,
           submitForm,
           isSubmitting,
+          setFieldValue,
         }) => (
           <Form onSubmit={handleSubmit} inline>
             <Form.Group controlId="formNoteDate">
@@ -39,8 +56,11 @@ const NoteFilters = props => {
               <Form.Control
                 type="date"
                 name="startDate"
-                onChange={handleChange}
-                value={values.startDate}
+                onChange={e => {
+                  handleChange(e);
+                  setStartDate(e.target.value);
+                }}
+                value={values.startDate || ''}
               />
             </Form.Group>
             <Form.Group controlId="formNoteDate" style={{ margin: '0 10px' }}>
@@ -48,8 +68,11 @@ const NoteFilters = props => {
               <Form.Control
                 type="date"
                 name="endDate"
-                onChange={handleChange}
-                value={values.endDate}
+                onChange={e => {
+                  handleChange(e);
+                  setEndDate(e.target.value);
+                }}
+                value={values.endDate || ''}
               />
             </Form.Group>
             Category:
@@ -62,7 +85,9 @@ const NoteFilters = props => {
                 {categories.map(category => (
                   <Dropdown.Item
                     key={category}
-                    onClick={() => setCategory(category)}
+                    onClick={() => {
+                      setCategory(category);
+                    }}
                   >
                     {category}
                   </Dropdown.Item>
@@ -72,10 +97,17 @@ const NoteFilters = props => {
             <Button type="submit" variant="dark" style={{ margin: '0 10px' }}>
               Fitler
             </Button>
-            <Button onClick={() => {
-              setCategory('All');
-              submitForm();
-            }} variant="dark">
+            <Button
+              onClick={async () => {
+                setCategory('All');
+                setStartDate('');
+                setEndDate('');
+                await setFieldValue('startDate', '');
+                await setFieldValue('endDate', '');
+                submitForm();
+              }}
+              variant="dark"
+            >
               Clear
             </Button>
           </Form>
