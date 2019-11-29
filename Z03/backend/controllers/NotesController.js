@@ -1,6 +1,11 @@
+let Note = require('../models/Note');
+let NoteRepository = require('../repositories/NoteRepository');
+
 exports.get_notes = (req, res) => {
 
-  res.send({ data: "hello"});
+  const noteRepository = new NoteRepository();
+  const data = noteRepository.findAll();
+  res.send({ data: data});
 };
 
 exports.get_all_trainings = (req, res) => {
