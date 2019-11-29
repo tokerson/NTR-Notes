@@ -4,7 +4,6 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
-import FiltersForm from './FiltersForm';
 
 export default function NoteFilters() {
   const [categories, setCategories] = React.useState(['All', 'Sport', 'NTR']);
@@ -30,7 +29,7 @@ export default function NoteFilters() {
           values,
           //   errors,
           //   touched,
-            handleChange,
+          handleChange,
           handleSubmit,
           isSubmitting,
         }) => (
@@ -44,7 +43,7 @@ export default function NoteFilters() {
                 value={values.startDate}
               />
             </Form.Group>
-            <Form.Group controlId="formNoteDate" style={{margin:"0 10px"}}>
+            <Form.Group controlId="formNoteDate" style={{ margin: '0 10px' }}>
               <Form.Label>End Date:</Form.Label>
               <Form.Control
                 type="date"
@@ -53,7 +52,17 @@ export default function NoteFilters() {
                 value={values.endDate}
               />
             </Form.Group>
-            <Button type="submit" variant="dark" style={{margin:"0 10px"}}>
+            Category:
+            <Dropdown>
+              <Dropdown.Toggle variant="light" id="dropdown-basic">
+                {category}
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu>
+                {categories.map((category) => (<Dropdown.Item key={category} onClick={() => setCategory(category)}>{category}</Dropdown.Item>))}
+              </Dropdown.Menu>
+            </Dropdown>
+            <Button type="submit" variant="dark" style={{ margin: '0 10px' }}>
               Fitler
             </Button>
             <Button type="submit" variant="dark">
