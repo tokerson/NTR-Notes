@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import { Link } from 'react-router-dom';
 
-export default function NotesList({ notes, deleteNote }) {
+export default function NotesList({ notes, deleteNote, getNote }) {
   return (
     <Row>
       <Table striped bordered hover>
@@ -20,7 +20,7 @@ export default function NotesList({ notes, deleteNote }) {
               <td>{date}</td>
               <td>{title}</td>
               <td>
-                <Link to={`/notes/edit/:id`}>
+                <Link to={`/notes/edit/${title}`} >
                   <Button variant="outline-dark">Edit</Button>
                 </Link>
                 <Button variant="dark" onClick={() => deleteNote(title)}>Delete</Button>

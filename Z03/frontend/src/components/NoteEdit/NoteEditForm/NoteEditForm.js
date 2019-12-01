@@ -13,12 +13,11 @@ import { API } from '../../../constants';
 
 import CategoryList from './CategoryList';
 
-
-const NoteEditForm = (props) => {
+const NoteEditForm = props => {
   const title = props.title || '';
   const content = props.content || '';
   const markdown = props.markdown || false;
-  const date = props.date || moment().format('YYYY-MM-DD');
+  const date = moment(props.date).format('YYYY-MM-DD') || moment().format('YYYY-MM-DD');
   const category = '';
   const [chosenCategory, setChosenCategory] = React.useState('');
   const [removeEnabled, setRemoveEnabled] = React.useState(false);
@@ -38,6 +37,26 @@ const NoteEditForm = (props) => {
     if (props.mode === 'new') {
       axios
         .post(`${API}/notes`, {
+          title: values.title,
+          content: values.content,
+          markdown: values.markdown,
+          date: date,
+          categories: categories,
+        })
+        .then(res => {
+          setSubmitting(false);
+          if (res.data !== 'Success') {
+            setErrorMessage(res.data);
+          } else {
+            props.history.push('/');
+          }
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else if (props.mode === 'edit') {
+      axios
+        .put(`${API}/notes/${props.title}`, {
           title: values.title,
           content: values.content,
           markdown: values.markdown,
@@ -87,7 +106,8 @@ const NoteEditForm = (props) => {
 
   return (
     <div>
-      {errorMessage && <Alert variant='danger'>{errorMessage}</Alert>}
+      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+      {console.log(date)}
       <Formik
         initialValues={{ title, content, categories, date, category, markdown }}
         validate={validate}
@@ -196,6 +216,6 @@ const NoteEditForm = (props) => {
       </Link>
     </div>
   );
-}
+};
 
-export default (withRouter)(NoteEditForm);
+export default withRouter(NoteEditForm);

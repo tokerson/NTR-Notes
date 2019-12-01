@@ -48,6 +48,37 @@ module.exports = class NoteRepository {
     };
   }
 
+  findByTitle(title) {
+    let note = new Note(title);
+    if (!this.noteExists(note)) {
+      throw Error(`Note with title='${title}' doesn't exist`);
+    }
+    if (fs.existsSync(`${directoryPath}/${title}.md`)) {
+      note.markdown = true;
+    }
+
+    const fileContent = fs.readFileSync(
+      directoryPath + '/' + title + (note.markdown ? '.md' : '.txt'),
+      'utf-8'
+    );
+    const lines = fileContent.split('\n');
+
+    lines[0]
+      .split(':')[1]
+      .split(',')
+      .forEach(category => {
+        category = category.trim();
+        if (category.length === 0) return;
+        note.categories.push({title: category});
+      });
+
+    note.date = lines[1].split(':')[1].trim();
+    for (let i = 2; i < lines.length; i++) {
+      note.content += lines[i];
+    }
+    return note;
+  }
+
   save(note) {
     if (this.noteExists(note)) {
       throw new Error('File with this title already exists');
@@ -80,6 +111,15 @@ module.exports = class NoteRepository {
       fs.unlinkSync(`${directoryPath}/${title}.txt`);
     } else if (fs.existsSync(`${directoryPath}/${title}.md`)) {
       fs.unlinkSync(`${directoryPath}/${title}.md`);
-    } else throw Error(`Error deleting note ${title}`)
+    } else throw Error(`Error deleting note ${title}`);
+  }
+
+  update(oldTitle, newNote) {
+    if (oldTitle !== newNote.title && this.noteExists(newNote)) {
+      throw Error(`Note with title='${title}' already exists`);
+    }
+
+    this.delete(oldTitle);
+    this.save(newNote);
   }
 };

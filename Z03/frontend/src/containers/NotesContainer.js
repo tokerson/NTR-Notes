@@ -34,6 +34,8 @@ const NotesContainer = () => {
       });
   };
 
+
+
   return (
     <div>
       <NoteFilters
