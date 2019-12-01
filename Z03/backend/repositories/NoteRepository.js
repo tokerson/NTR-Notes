@@ -64,7 +64,6 @@ module.exports = class NoteRepository {
       fileContent,
       err => {
         if (err) throw err;
-        console.log('saved');
       }
     );
   }
@@ -74,5 +73,13 @@ module.exports = class NoteRepository {
       fs.existsSync(`${directoryPath}/${note.title}.txt`) ||
       fs.existsSync(`${directoryPath}/${note.title}.md`)
     );
+  }
+
+  delete(title) {
+    if (fs.existsSync(`${directoryPath}/${title}.txt`)) {
+      fs.unlinkSync(`${directoryPath}/${title}.txt`);
+    } else if (fs.existsSync(`${directoryPath}/${title}.md`)) {
+      fs.unlinkSync(`${directoryPath}/${title}.md`);
+    } else throw Error(`Error deleting note ${title}`)
   }
 };

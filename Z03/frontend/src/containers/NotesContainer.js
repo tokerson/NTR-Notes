@@ -20,10 +20,29 @@ const NotesContainer = () => {
       });
   }, []);
 
+  const deleteNote = title => {
+    axios
+      .delete(`${API}/notes/${title}`)
+      .then(res => {
+        if (res.data === 'Success') {
+          setNotes(notes.filter(note => note.title !== title));
+          setFilteredNotes(filteredNotes.filter(note => note.title !== title));
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
   return (
     <div>
-      <NoteFilters style={{ marginTop: '20px' }} notes={notes} setFilteredNotes={setFilteredNotes} categories={categories} />
-      <NotesList notes={filteredNotes} />
+      <NoteFilters
+        style={{ marginTop: '20px' }}
+        notes={notes}
+        setFilteredNotes={setFilteredNotes}
+        categories={categories}
+      />
+      <NotesList notes={filteredNotes} deleteNote={deleteNote} />
     </div>
   );
 };

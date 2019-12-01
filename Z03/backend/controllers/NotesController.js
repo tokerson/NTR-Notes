@@ -26,6 +26,18 @@ exports.post_note = (req, res, next) => {
   res.send("Success");
 }
 
+exports.delete_note = (req, res) => {
+  const title = req.params.title;
+
+  const noteRepository = new NoteRepository();
+ try {
+   noteRepository.delete(title);
+ } catch (err) {
+   return res.send(err.message);
+ }
+ res.send("Success");
+}
+
 exports.get_all_trainings = (req, res) => {
   Training.find({}, function(err, trainings) {
     trainings = trainings.map(training => {

@@ -12,6 +12,7 @@ const PORT = 8000;
 
 router.get('/notes', notesController.get_notes);
 router.post('/notes', notesController.post_note);
+router.delete('/notes/:title', notesController.delete_note);
 
 app.use('/api', router);
 
