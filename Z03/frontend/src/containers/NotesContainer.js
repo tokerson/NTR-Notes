@@ -8,17 +8,24 @@ const NotesContainer = () => {
   const [notes, setNotes] = React.useState([]);
   const [filteredNotes, setFilteredNotes] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
+  const [pager, setPager] = React.useState({});
 
   React.useEffect(() => {
-    axios
-      .get(`${API}/notes`)
-      .then(res => res.data)
-      .then(({ data }) => {
-        setCategories(data.categories);
-        setFilteredNotes(data.notes);
-        setNotes(data.notes);
-      });
-  }, []);
+    loadPage();
+  });
+
+  const loadPage = () => {
+    const params = new URLSearchParams(location.search);
+    const page = parseInt(params.get('page')) || 1;
+    if(page !== pager.currentPage) {
+      axios.get(`${API}/notes?page=${page}`).then(res => res.data).then(({ pager, pageOfNotes, categories }) => {
+        setPager(pager);
+        setNotes(pageOfNotes);
+        setFilteredNotes(pageOfNotes);
+        setCategories(categories);
+      })
+    }
+  }
 
   const deleteNote = title => {
     axios
@@ -44,7 +51,7 @@ const NotesContainer = () => {
         setFilteredNotes={setFilteredNotes}
         categories={categories}
       />
-      <NotesList notes={filteredNotes} deleteNote={deleteNote} />
+      <NotesList pager={pager} notes={filteredNotes} deleteNote={deleteNote} />
     </div>
   );
 };

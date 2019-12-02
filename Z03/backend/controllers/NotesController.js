@@ -1,10 +1,20 @@
 let Note = require('../models/Note');
 let NoteRepository = require('../repositories/NoteRepository');
+let paginate = require('jw-paginate');
 
 exports.get_notes = (req, res) => {
   const noteRepository = new NoteRepository();
-  const data = noteRepository.findAll();
-  res.send({ data: data });
+  const allNotes = noteRepository.findAll();
+
+  const page = parseInt(req.query.page) || 1;
+
+  const pageSize = 5;
+  const pager = paginate(allNotes.length, page, pageSize);
+  pager.endPage = Math.ceil(allNotes.notes.length / pageSize);
+
+  const pageOfNotes = allNotes.notes.splice(pager.startIndex, pageSize);
+
+  res.send({ pager, pageOfNotes, categories: allNotes.categories });
 };
 
 exports.get_note = (req, res) => {
