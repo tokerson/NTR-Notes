@@ -2,30 +2,40 @@ import React from 'react';
 import NotesList from '../components/NotesList/NotesList';
 import NoteFilters from '../components/NoteFilters/NoteFilters';
 import axios from 'axios';
-import { API } from '../constants';
+import { API, DATE_FORMAT } from '../constants';
 
 const NotesContainer = () => {
   const [notes, setNotes] = React.useState([]);
-  const [filteredNotes, setFilteredNotes] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
   const [pager, setPager] = React.useState({});
+  const [page, setPage] = React.useState(1);
+  const [filters, setFilters] = React.useState({
+    category: 'All',
+    startDate: null,
+    endDate: null,
+  });
 
   React.useEffect(() => {
     loadPage();
-  });
+  }, [filters, page]);
 
   const loadPage = () => {
     const params = new URLSearchParams(location.search);
-    const page = parseInt(params.get('page')) || 1;
-    if(page !== pager.currentPage) {
-      axios.get(`${API}/notes?page=${page}`).then(res => res.data).then(({ pager, pageOfNotes, categories }) => {
+    const { category, startDate, endDate } = filters;
+    axios
+      .get(
+        `${API}/notes?page=${page}&category=${category ||
+          'All'}&startDate=${startDate &&
+          startDate.format(DATE_FORMAT)}&endDate=${endDate &&
+          endDate.format(DATE_FORMAT)}`
+      )
+      .then(res => res.data)
+      .then(({ pager, pageOfNotes, categories }) => {
         setPager(pager);
         setNotes(pageOfNotes);
-        setFilteredNotes(pageOfNotes);
         setCategories(categories);
-      })
-    }
-  }
+      });
+  };
 
   const deleteNote = title => {
     axios
@@ -33,7 +43,6 @@ const NotesContainer = () => {
       .then(res => {
         if (res.data === 'Success') {
           setNotes(notes.filter(note => note.title !== title));
-          setFilteredNotes(filteredNotes.filter(note => note.title !== title));
         }
       })
       .catch(err => {
@@ -41,17 +50,21 @@ const NotesContainer = () => {
       });
   };
 
-
-
   return (
     <div>
       <NoteFilters
         style={{ marginTop: '20px' }}
         notes={notes}
-        setFilteredNotes={setFilteredNotes}
         categories={categories}
+        setFilters={(category, startDate, endDate) => {
+          setFilters({
+            category,
+            startDate,
+            endDate,
+          });
+        }}
       />
-      <NotesList pager={pager} notes={filteredNotes} deleteNote={deleteNote} />
+      <NotesList pager={pager} setPage={setPage} notes={notes} deleteNote={deleteNote} />
     </div>
   );
 };

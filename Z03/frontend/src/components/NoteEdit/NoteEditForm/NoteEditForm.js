@@ -9,7 +9,7 @@ import Col from 'react-bootstrap/Col';
 import moment from 'moment';
 import axios from 'axios';
 import { Link, withRouter } from 'react-router-dom';
-import { API } from '../../../constants';
+import { API, DATE_FORMAT } from '../../../constants';
 
 import CategoryList from './CategoryList';
 
@@ -17,7 +17,7 @@ const NoteEditForm = props => {
   const title = props.title || '';
   const content = props.content || '';
   const markdown = props.markdown || false;
-  const date = moment(props.date).format('YYYY-MM-DD') || moment().format('YYYY-MM-DD');
+  const date = moment(props.date).format(DATE_FORMAT) || moment().format(DATE_FORMAT);
   const category = '';
   const [chosenCategory, setChosenCategory] = React.useState('');
   const [removeEnabled, setRemoveEnabled] = React.useState(false);

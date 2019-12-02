@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import Dropdown from 'react-bootstrap/Dropdown';
 import moment from 'moment';
+import { Link, withRouter } from 'react-router-dom';
 
 const NoteFilters = props => {
   const [category, setCategory] = React.useState('All');
@@ -13,23 +14,10 @@ const NoteFilters = props => {
   const categories = ['All', ...props.categories.map(({ title }) => title)];
 
   const handleOnSubmit = values => {
-    const { setFilteredNotes, notes } = props;
-    let filtered = [...notes];
+    const { setFilters } = props;
     const start = moment(values.startDate);
     const end = moment(values.endDate);
-    if (start.isValid()) {
-      filtered = filtered.filter(note =>
-        moment(note.date).isSameOrAfter(start)
-      );
-    }
-    if (end.isValid()) {
-      filtered = filtered.filter(note => moment(note.date).isSameOrBefore(end));
-    }
-    category === 'All'
-      ? setFilteredNotes(filtered)
-      : setFilteredNotes(
-          filtered.filter(note => note.categories.includes(category))
-        );
+    setFilters(category, start, end);
   };
 
   return (
@@ -112,4 +100,4 @@ const NoteFilters = props => {
     </Row>
   );
 };
-export default NoteFilters;
+export default withRouter(NoteFilters);

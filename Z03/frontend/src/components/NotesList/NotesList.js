@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
 import { Link } from 'react-router-dom';
 
-export default function NotesList({ notes, deleteNote, pager }) {
+export default function NotesList({ notes, deleteNote, pager, setPage }) {
   return (
     <Row>
       <Table striped bordered hover>
@@ -34,13 +34,19 @@ export default function NotesList({ notes, deleteNote, pager }) {
       <Link to="/notes/new">
         <Button>New</Button>
       </Link>
-      <Link to={`/?page=${pager.currentPage - 1}`}>
-        <Button disabled={pager.currentPage === 1}>Prev Page</Button>
-      </Link>
+      <Button
+        onClick={() => setPage(pager.currentPage - 1)}
+        disabled={pager.currentPage === 1}
+      >
+        Prev Page
+      </Button>
       {`${pager.currentPage} / ${pager.endPage}`}
-      <Link to={`/?page=${pager.currentPage + 1}`}>
-        <Button disabled={pager.currentPage === pager.endPage}>Next Page</Button>
-      </Link>
+      <Button
+        onClick={() => setPage(pager.currentPage + 1)}
+        disabled={pager.currentPage === pager.endPage}
+      >
+        Next Page
+      </Button>
     </Row>
   );
 }
