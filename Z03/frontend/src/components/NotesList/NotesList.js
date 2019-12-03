@@ -40,7 +40,7 @@ export default function NotesList({ notes, deleteNote, pager, setPage }) {
       >
         Prev Page
       </Button>
-      {`${pager.currentPage} / ${pager.endPage}`}
+      {`${pager.currentPage || 1} / ${pager.endPage || 1}`}
       <Button
         onClick={() => setPage(pager.currentPage + 1)}
         disabled={pager.currentPage === pager.endPage}

@@ -8,9 +8,9 @@ import moment from 'moment';
 import { Link, withRouter } from 'react-router-dom';
 
 const NoteFilters = props => {
-  const [category, setCategory] = React.useState('All');
-  const [startDate, setStartDate] = React.useState('');
-  const [endDate, setEndDate] = React.useState('');
+  const [category, setCategory] = React.useState(props.category);
+  const [startDate, setStartDate] = React.useState(props.startDate || '');
+  const [endDate, setEndDate] = React.useState(props.endDate || '');
   const categories = ['All', ...props.categories.map(({ title }) => title)];
 
   const handleOnSubmit = values => {
