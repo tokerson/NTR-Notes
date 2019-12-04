@@ -69,7 +69,7 @@ module.exports = class NoteRepository {
       .forEach(category => {
         category = category.trim();
         if (category.length === 0) return;
-        note.categories.push({title: category});
+        note.categories.push({ title: category });
       });
 
     note.date = lines[1].split(':')[1].trim();
@@ -81,7 +81,7 @@ module.exports = class NoteRepository {
 
   save(note) {
     if (this.noteExists(note)) {
-      throw new Error('File with this title already exists');
+      throw new Error(`Note with title='${note.title}' already exists`);
     }
 
     const extension = note.markdown ? '.md' : '.txt';
@@ -116,7 +116,7 @@ module.exports = class NoteRepository {
 
   update(oldTitle, newNote) {
     if (oldTitle !== newNote.title && this.noteExists(newNote)) {
-      throw Error(`Note with title='${title}' already exists`);
+      throw Error(`Note with title='${newNote.title}' already exists`);
     }
 
     this.delete(oldTitle);

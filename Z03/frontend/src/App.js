@@ -10,7 +10,7 @@ import { StateProvider } from './state';
 const App = () => {
   const initialState = {
     page: 1,
-    category: 'Web',
+    category: 'All',
     startDate: null,
     endDate: null,
   };

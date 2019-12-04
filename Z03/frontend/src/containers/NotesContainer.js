@@ -2,6 +2,7 @@ import React from 'react';
 import NotesList from '../components/NotesList/NotesList';
 import NoteFilters from '../components/NoteFilters/NoteFilters';
 import axios from 'axios';
+import Spinner from 'react-bootstrap/Spinner';
 import { API, DATE_FORMAT } from '../constants';
 import { useStateValue } from '../state';
 
@@ -78,12 +79,18 @@ const NotesContainer = () => {
         startDate={startDate}
         endDate={endDate}
       />
-      <NotesList
-        pager={pager}
-        setPage={setPage}
-        notes={notes}
-        deleteNote={deleteNote}
-      />
+      {notes ? (
+        <NotesList
+          pager={pager}
+          setPage={setPage}
+          notes={notes}
+          deleteNote={deleteNote}
+        />
+      ) : (
+        <Spinner animation="border" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      )}
     </div>
   );
 };

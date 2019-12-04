@@ -9,7 +9,7 @@ exports.get_notes = (req, res) => {
 
   const page = parseInt(req.query.page) || 1;
   const category = req.query.category;
-  const dateFormat = 'YYYY-MM-DD'
+  const dateFormat = 'YYYY-MM-DD';
   const startDate = moment(req.query.startDate, dateFormat);
   const endDate = moment(req.query.endDate, dateFormat);
 
@@ -18,10 +18,14 @@ exports.get_notes = (req, res) => {
     notes = notes.filter(note => note.categories.includes(category));
   }
   if (startDate.isValid()) {
-    notes = notes.filter(note => moment(note.date, dateFormat).isSameOrAfter(startDate));
+    notes = notes.filter(note =>
+      moment(note.date, dateFormat).isSameOrAfter(startDate)
+    );
   }
   if (endDate.isValid()) {
-    notes = notes.filter(note => moment(note.date, dateFormat).isSameOrBefore(endDate));
+    notes = notes.filter(note =>
+      moment(note.date, dateFormat).isSameOrBefore(endDate)
+    );
   }
 
   const pageSize = 5;
@@ -86,6 +90,7 @@ exports.update_note = (req, res) => {
   try {
     noteRepository.update(oldTitle, newNote);
   } catch (err) {
+    console.log(err);
     return res.send(err.message);
   }
   res.send('Success');

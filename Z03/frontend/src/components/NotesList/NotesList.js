@@ -2,6 +2,7 @@ import React from 'react';
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
 import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
 
 export default function NotesList({ notes, deleteNote, pager, setPage }) {
@@ -31,22 +32,28 @@ export default function NotesList({ notes, deleteNote, pager, setPage }) {
             ))}
         </tbody>
       </Table>
-      <Link to="/notes/new">
-        <Button>New</Button>
-      </Link>
-      <Button
-        onClick={() => setPage(pager.currentPage - 1)}
-        disabled={pager.currentPage === 1}
-      >
-        Prev Page
-      </Button>
-      {`${pager.currentPage || 1} / ${pager.endPage || 1}`}
-      <Button
-        onClick={() => setPage(pager.currentPage + 1)}
-        disabled={pager.currentPage === pager.endPage}
-      >
-        Next Page
-      </Button>
+      <Row>
+        <Col>
+          <Link to="/notes/new">
+            <Button>New</Button>
+          </Link>
+        </Col>
+        <Button
+          variant="secondary"
+          onClick={() => setPage(pager.currentPage - 1)}
+          disabled={pager.currentPage === 1 || !pager.currentPage}
+        >
+          Prev Page
+        </Button>
+        {`${pager.currentPage || 1} / ${pager.endPage || 1}`}
+        <Button
+          variant="secondary"
+          onClick={() => setPage(pager.currentPage + 1)}
+          disabled={pager.currentPage === pager.endPage || !pager.currentPage}
+        >
+          Next Page
+        </Button>
+      </Row>
     </Row>
   );
 }
