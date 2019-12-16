@@ -11,7 +11,6 @@ const NoteContainer = props => {
       .get(`${API}/notes/${props.match.params.id}`)
       .then(res => res.data)
       .then(({ data }) => {
-        console.log(data);
         setNote(data);
       })
       .catch(err => console.log(err.message));
@@ -26,9 +25,9 @@ const NoteContainer = props => {
           idnote={note.idnote}
           timestamp={note.timestamp}
           title={note.title}
-          content={note.content}
+          content={note.description}
           categories={note.categories}
-          markdown={note.markdown}
+          markdown={note.isMarkdown}
           date={note.date}
         />
       )}

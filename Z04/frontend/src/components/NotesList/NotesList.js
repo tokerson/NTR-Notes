@@ -10,7 +10,6 @@ import { DATE_FORMAT } from '../../constants';
 export default function NotesList({ notes, deleteNote, pager, setPage }) {
   return (
     <Row>
-      {console.log(notes)}
       <Table striped bordered hover>
         <tbody>
           <tr>

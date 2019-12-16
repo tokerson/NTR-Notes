@@ -111,6 +111,58 @@ namespace Backend.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateAsync(int? id, [FromBody]DomainModel.Note note)
+        {
+            if (id == null) {
+                return NotFound();
+            }
+
+            using(var context = new NTR2019ZContext()){
+                var noteToUpdate = await context.Note.Include(i => i.NoteCategory).ThenInclude(noteCategories => noteCategories.IdcategoryNavigation).FirstOrDefaultAsync(note => note.Idnote == id);
+
+                if(noteToUpdate == null){
+                    return NotFound();
+                }
+
+                context.Entry(noteToUpdate).Property("Timestamp").OriginalValue = note.Timestamp;
+
+                try
+                {
+                    noteToUpdate.Date = note.Date;
+                    noteToUpdate.Title = note.Title;
+                    noteToUpdate.Description = note.Description;
+                    noteToUpdate.IsMarkdown = note.IsMarkdown;
+
+                    await context.SaveChangesAsync();
+                    return Ok();
+                } catch (DbUpdateConcurrencyException ex)
+                {
+                    var exceptionEntry = ex.Entries.Single();
+                    var databaseEntry = exceptionEntry.GetDatabaseValues();
+                    if(databaseEntry == null)
+                    {
+                        return StatusCode(500, "The record you attempted to edit "
+                        + "was deleted.");
+                    } else {
+                        noteToUpdate.Timestamp = (byte[])noteToUpdate.Timestamp;
+                        return StatusCode(500, "The record you attempted to edit "
+                        + "was modified by another user after you got the original value. The "
+                        + "edit operation was canceled and the current values in the database "
+                        + "have been displayed. If you still want to edit this record, click "
+                        + "the Save button again. Otherwise click the Back to List hyperlink.");
+                    }
+                } catch (DbUpdateException ex)
+                {
+                    ModelState.AddModelError(string.Empty, ex.InnerException.Message);
+                }
+
+                return Ok();
+            }
+        }
+
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

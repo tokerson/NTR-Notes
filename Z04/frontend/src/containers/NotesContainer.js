@@ -36,9 +36,7 @@ const NotesContainer = () => {
     axios
       .delete(`${API}/notes/${id}`)
       .then(res => {
-        if (res.data === 'Success') {
-          setNotes(notes.filter(note => note.idnote !== id));
-        }
+        loadPage();
       })
       .catch(err => {
         console.log(err);

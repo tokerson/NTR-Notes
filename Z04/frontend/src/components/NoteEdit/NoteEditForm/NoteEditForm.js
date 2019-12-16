@@ -54,34 +54,37 @@ const NoteEditForm = props => {
       })
         .then(res => {
           setSubmitting(false);
-          if (res.data !== 'Success') {
+          if (res.status !== 200) {
             setErrorMessage(res.data);
           } else {
             props.history.push('/');
           }
         })
         .catch(err => {
-          console.log(err);
+          setErrorMessage(err);
         });
     } else if (props.mode === 'edit') {
       axios
-        .put(`${API}/notes/${props.title}`, {
-          title: values.title,
-          content: values.content,
-          markdown: values.markdown,
-          date: date,
-          categories: categories,
+        .put(`${API}/notes/${idNote}`, {
+          Idnote: idNote,
+          Title: values.title,
+          Description: values.content,
+          IsMarkdown: values.markdown ? 1 : 0,
+          Date: date,
+          Categories: categories,
+          Timestamp: timestamp,
         })
         .then(res => {
           setSubmitting(false);
-          if (res.data !== 'Success') {
+          if (res.status !== 200) {
             setErrorMessage(res.data);
           } else {
             props.history.push('/');
           }
         })
         .catch(err => {
-          console.log(err);
+          setSubmitting(false);
+          setErrorMessage(err.message);
         });
     }
   };
@@ -116,7 +119,6 @@ const NoteEditForm = props => {
   return (
     <div>
       {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-      {console.log(idNote)}
       <Formik
         initialValues={{ title, content, categories, date, category, markdown }}
         validate={validate}
