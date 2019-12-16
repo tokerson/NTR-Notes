@@ -23,6 +23,8 @@ const NoteContainer = props => {
       {note && (
         <NoteEditForm
           mode="edit"
+          idnote={note.idnote}
+          timestamp={note.timestamp}
           title={note.title}
           content={note.content}
           categories={note.categories}

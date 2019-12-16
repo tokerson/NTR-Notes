@@ -17,7 +17,10 @@ const NoteEditForm = props => {
   const title = props.title || '';
   const content = props.content || '';
   const markdown = props.markdown || false;
-  const date = moment(props.date).format(DATE_FORMAT) || moment().format(DATE_FORMAT);
+  const timestamp = props.timestamp;
+  const idNote = props.idnote;
+  const date =
+    moment(props.date).format(DATE_FORMAT) || moment().format(DATE_FORMAT);
   const category = '';
   const [chosenCategory, setChosenCategory] = React.useState('');
   const [removeEnabled, setRemoveEnabled] = React.useState(false);
@@ -35,14 +38,20 @@ const NoteEditForm = props => {
   const handleOnSubmit = (values, { setSubmitting }) => {
     const date = moment(values.date).isValid ? moment(values.date) : moment();
     if (props.mode === 'new') {
-      axios
-        .post(`${API}/notes`, {
-          title: values.title,
-          content: values.content,
-          markdown: values.markdown,
-          date: date,
-          categories: categories,
-        })
+      axios({
+        url: `${API}/notes`,
+        data: {
+          Title: values.title,
+          Description: values.content,
+          IsMarkdown: values.markdown ? 1 : 0,
+          Date: date,
+          Categories: categories,
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'post',
+      })
         .then(res => {
           setSubmitting(false);
           if (res.data !== 'Success') {
@@ -80,14 +89,14 @@ const NoteEditForm = props => {
   const handleAddCategory = category => {
     if (category !== '') {
       if (!categoryExists(category)) {
-        setCategories([...categories, { title: category }]);
+        setCategories([...categories, category]);
       }
     }
   };
 
   const categoryExists = category => {
     let found = false;
-    categories.forEach(({ title }) => {
+    categories.forEach(title => {
       if (title === category) {
         found = true;
       }
@@ -96,7 +105,7 @@ const NoteEditForm = props => {
   };
 
   const handleRemoveCategory = () => {
-    setCategories(categories.filter(({ title }) => title !== chosenCategory));
+    setCategories(categories.filter(title => title !== chosenCategory));
   };
 
   const handleChooseCategory = category => {
@@ -107,7 +116,7 @@ const NoteEditForm = props => {
   return (
     <div>
       {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-      {console.log(date)}
+      {console.log(idNote)}
       <Formik
         initialValues={{ title, content, categories, date, category, markdown }}
         validate={validate}

@@ -43,9 +43,9 @@
               "target": "Package",
               "version": "[1.1.17, )"
             },
-            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+            "Microsoft.AspNetCore.Cors": {
               "target": "Package",
-              "version": "(, )"
+              "version": "[2.2.0, )"
             },
             "Microsoft.EntityFrameworkCore.SqlServer": {
               "target": "Package",
