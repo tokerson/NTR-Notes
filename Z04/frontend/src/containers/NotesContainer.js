@@ -27,8 +27,10 @@ const NotesContainer = () => {
       .then(res => res.data)
       .then(({ pageOfNotes, categories, pager }) => {
         console.log(categories);
+        console.log(pager);
+        console.log(pageOfNotes)
         setPager(pager);
-        setNotes(pageOfNotes.result);
+        setNotes(pageOfNotes);
         setCategories(categories);
       });
   };

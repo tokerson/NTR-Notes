@@ -35,7 +35,7 @@ namespace Backend
             }
         }
 
-        public static async Task<PaginatedList<T>> Create(IQueryable<T> source, int pageIndex, int pageSize)
+        public static PaginatedList<T> Create(IQueryable<T> source, int pageIndex, int pageSize)
         {
             var count = source.Count();
             var items = source.Skip((pageIndex - 1) * pageSize).Take(pageSize).ToList();

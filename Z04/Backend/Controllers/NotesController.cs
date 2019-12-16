@@ -43,7 +43,8 @@ namespace Backend.Controllers
                     notes = notes.Where(n => n.Date <= Convert.ToDateTime(startDate)).ToList();
                 }
                 var categories = await context.Category.ToListAsync();
-                return Ok(new { pageOfNotes=PaginatedList<DomainModel.Note>.Create(notes.Select(note => DomainModel.Note.Create(note)).AsQueryable(), page ?? 1, pageSize), categories=categories.Select(c => c.Name), pager=1});
+                var pageOfNotes = PaginatedList<DomainModel.Note>.Create(notes.Select(note => DomainModel.Note.Create(note)).AsQueryable(), page ?? 1, pageSize);
+                return Ok(new { pageOfNotes=pageOfNotes, categories=categories.Select(c => c.Name), pager= new {currentPage=pageOfNotes.PageIndex, endPage=pageOfNotes.TotalPages }});
             }
         }
 
