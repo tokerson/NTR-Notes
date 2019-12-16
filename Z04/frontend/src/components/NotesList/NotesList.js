@@ -27,7 +27,7 @@ export default function NotesList({ notes, deleteNote, pager, setPage }) {
                   <Link to={`/notes/edit/${idnote}`}>
                     <Button variant="outline-dark">Edit</Button>
                   </Link>
-                  <Button variant="dark" onClick={() => deleteNote(title)}>
+                  <Button variant="dark" onClick={() => deleteNote(idnote)}>
                     Delete
                   </Button>
                 </td>

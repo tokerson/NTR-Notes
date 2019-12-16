@@ -110,5 +110,33 @@ namespace Backend.Controllers
                 return Ok();
             }
         }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteAsync(int? id)
+        {
+            if (id == null) {
+                return NotFound();
+            }
+
+            using(var context = new NTR2019ZContext()) {
+                try {
+                    var note = await context.Note.Where(n => n.Idnote == id).FirstOrDefaultAsync();
+                    var noteCategory = await context.NoteCategory.Where(nc => nc.Idnote == id).ToListAsync();
+                    Array.ForEach(noteCategory.ToArray(), nc => {
+                        context.NoteCategory.Attach(nc);
+                        context.NoteCategory.Remove(nc);
+                    });
+                    context.Note.Attach(note);
+                    context.Note.Remove(note);
+                    await context.SaveChangesAsync();
+                } catch(DbUpdateConcurrencyException) {
+                        ModelState.AddModelError("Title","Something went wrong with deleting");
+                }
+
+                return Ok();
+            }
+        }
     }
 }

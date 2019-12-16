@@ -26,21 +26,18 @@ const NotesContainer = () => {
       )
       .then(res => res.data)
       .then(({ pageOfNotes, categories, pager }) => {
-        console.log(categories);
-        console.log(pager);
-        console.log(pageOfNotes)
         setPager(pager);
         setNotes(pageOfNotes);
         setCategories(categories);
       });
   };
 
-  const deleteNote = title => {
+  const deleteNote = id => {
     axios
-      .delete(`${API}/notes/${title}`)
+      .delete(`${API}/notes/${id}`)
       .then(res => {
         if (res.data === 'Success') {
-          setNotes(notes.filter(note => note.title !== title));
+          setNotes(notes.filter(note => note.idnote !== id));
         }
       })
       .catch(err => {
