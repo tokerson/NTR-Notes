@@ -82,10 +82,14 @@ const NoteFilters = props => {
               Fitler
             </Button>
             <Button
+              disabled={
+                category === 'All' && startDate === '' && endDate === ''
+              }
               onClick={async () => {
                 setCategory('All');
                 setStartDate('');
                 setEndDate('');
+                props.setPage(1);
                 await setFieldValue('startDate', '');
                 await setFieldValue('endDate', '');
                 submitForm();

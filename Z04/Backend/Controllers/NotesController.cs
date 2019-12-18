@@ -34,16 +34,20 @@ namespace Backend.Controllers
             using(var context = new NTR2019ZContext()) {
                 var notes = await context.Note.Include(n => n.NoteCategory).ThenInclude(nc => nc.IdcategoryNavigation).ToListAsync();
                 if(category != null && category != "All") {
+                    page = 1;
                     notes = notes.Where(n => n.NoteCategory.Any(nc => nc.IdcategoryNavigation.Name.Equals(category))).ToList();
                 }
                 if(startDate != null && startDate != "Invalid date" && startDate != "null") {
+                    page = 1;
                     notes = notes.Where(n => n.Date >= Convert.ToDateTime(startDate)).ToList();
                 }
                 if(endDate != null && endDate != "Invalid date" && endDate != "null") {
+                    page = 1;
                     notes = notes.Where(n => n.Date <= Convert.ToDateTime(startDate)).ToList();
                 }
                 var categories = await context.Category.ToListAsync();
-                var pageOfNotes = PaginatedList<DomainModel.Note>.Create(notes.Select(note => DomainModel.Note.Create(note)).AsQueryable(), page ?? 1, pageSize);
+                var domainNotes = notes.Select(note => DomainModel.Note.Create(note)).AsQueryable();
+                var pageOfNotes = PaginatedList<DomainModel.Note>.Create(domainNotes, page ?? 1, pageSize);
                 return Ok(new { pageOfNotes=pageOfNotes, categories=categories.Select(c => c.Name), pager= new {currentPage=pageOfNotes.PageIndex, endPage=pageOfNotes.TotalPages }});
             }
         }
@@ -135,6 +139,19 @@ namespace Backend.Controllers
                     noteToUpdate.Title = note.Title;
                     noteToUpdate.Description = note.Description;
                     noteToUpdate.IsMarkdown = note.IsMarkdown;
+
+                    foreach (string category in note.Categories) {
+                        var cat = await context.Category.Where(categoryObj => categoryObj.Name == category).FirstOrDefaultAsync();
+
+                        if(cat == null) {
+                            cat = new Category {Name = category};
+                            context.Category.Add(cat);
+                        }
+                        var noteCategory = await context.NoteCategory.Where(nc => nc.IdcategoryNavigation.Name == category && nc.Idnote == noteToUpdate.Idnote).FirstOrDefaultAsync();
+                        if(noteCategory == null) {
+                            context.Add(new NoteCategory { Idnote = noteToUpdate.Idnote, IdcategoryNavigation=cat});
+                        }
+                    }
 
                     await context.SaveChangesAsync();
                     return Ok();
