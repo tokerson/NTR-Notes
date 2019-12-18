@@ -43,7 +43,7 @@ namespace Backend.Controllers
                 }
                 if(endDate != null && endDate != "Invalid date" && endDate != "null") {
                     page = 1;
-                    notes = notes.Where(n => n.Date <= Convert.ToDateTime(startDate)).ToList();
+                    notes = notes.Where(n => n.Date <= Convert.ToDateTime(endDate)).ToList();
                 }
                 var categories = await context.Category.ToListAsync();
                 var domainNotes = notes.Select(note => DomainModel.Note.Create(note)).AsQueryable();

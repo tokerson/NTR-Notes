@@ -23,8 +23,8 @@ const NotesContainer = () => {
     axios
       .get(
         `${API}/notes?page=${page}&category=${category}&startDate=${startDate &&
-          startDate.format(DATE_FORMAT)}&endDate=${endDate &&
-          endDate.format(DATE_FORMAT)}`
+          startDate}&endDate=${endDate &&
+          endDate}`
       )
       .then(res => res.data)
       .then(({ pageOfNotes, categories, pager }) => {

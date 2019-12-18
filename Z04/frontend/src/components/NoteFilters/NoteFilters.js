@@ -15,8 +15,8 @@ const NoteFilters = props => {
 
   const handleOnSubmit = values => {
     const { setFilters } = props;
-    const start = moment(values.startDate);
-    const end = moment(values.endDate);
+    const start = values.startDate;
+    const end = values.endDate;
     setFilters(category, start, end);
   };
 

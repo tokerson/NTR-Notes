@@ -19,14 +19,14 @@ const NoteEditForm = props => {
   const markdown = props.markdown || false;
   const timestamp = props.timestamp;
   const idNote = props.idnote;
-  const date =
-    moment(props.date).format(DATE_FORMAT) || moment().format(DATE_FORMAT);
+  const date = moment(props.date).format(DATE_FORMAT) || new Date();
   const category = '';
   const [chosenCategory, setChosenCategory] = React.useState('');
   const [removeEnabled, setRemoveEnabled] = React.useState(false);
   const [categories, setCategories] = React.useState(props.categories || []);
   const [errorMessage, setErrorMessage] = React.useState('');
 
+  console.log(date);
   const validate = values => {
     const errors = {};
     if (!values.title) {
@@ -36,7 +36,7 @@ const NoteEditForm = props => {
   };
 
   const handleOnSubmit = (values, { setSubmitting }) => {
-    const date = moment(values.date).isValid ? moment(values.date) : moment();
+    const date = values.date;
     if (props.mode === 'new') {
       axios({
         url: `${API}/notes`,
