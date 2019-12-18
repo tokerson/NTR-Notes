@@ -61,7 +61,8 @@ const NoteEditForm = props => {
           }
         })
         .catch(err => {
-          setErrorMessage(err);
+          setSubmitting(false);
+          setErrorMessage(err.response.data);
         });
     } else if (props.mode === 'edit') {
       axios
@@ -84,7 +85,7 @@ const NoteEditForm = props => {
         })
         .catch(err => {
           setSubmitting(false);
-          setErrorMessage(err.message);
+          setErrorMessage(err.response.data);
         });
     }
   };

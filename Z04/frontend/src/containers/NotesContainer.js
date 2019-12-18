@@ -3,6 +3,7 @@ import NotesList from '../components/NotesList/NotesList';
 import NoteFilters from '../components/NoteFilters/NoteFilters';
 import axios from 'axios';
 import Spinner from 'react-bootstrap/Spinner';
+import Alert from 'react-bootstrap/Alert';
 import { API, DATE_FORMAT } from '../constants';
 import { useStateValue } from '../state';
 
@@ -10,6 +11,7 @@ const NotesContainer = () => {
   const [notes, setNotes] = React.useState([]);
   const [categories, setCategories] = React.useState([]);
   const [pager, setPager] = React.useState({});
+  const [errorMessage, setErrorMessage] = React.useState('');
   const [{ page, category, startDate, endDate }, dispatch] = useStateValue();
 
   React.useEffect(() => {
@@ -26,8 +28,6 @@ const NotesContainer = () => {
       )
       .then(res => res.data)
       .then(({ pageOfNotes, categories, pager }) => {
-        console.log(pager);
-        console.log(page);
         setPager(pager);
         setNotes(pageOfNotes);
         setCategories(categories);
@@ -41,7 +41,7 @@ const NotesContainer = () => {
         loadPage();
       })
       .catch(err => {
-        console.log(err);
+        setErrorMessage(err.response.data)
       });
   };
 
@@ -69,6 +69,8 @@ const NotesContainer = () => {
 
   return (
     <div>
+      {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
+
       <NoteFilters
         style={{ marginTop: '20px' }}
         notes={notes}

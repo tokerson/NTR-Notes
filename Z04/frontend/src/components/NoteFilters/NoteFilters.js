@@ -87,8 +87,8 @@ const NoteFilters = props => {
               }
               onClick={async () => {
                 setCategory('All');
-                setStartDate('');
-                setEndDate('');
+                setStartDate(null);
+                setEndDate(null);
                 props.setPage(1);
                 await setFieldValue('startDate', '');
                 await setFieldValue('endDate', '');

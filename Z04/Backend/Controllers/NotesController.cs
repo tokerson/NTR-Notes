@@ -76,7 +76,7 @@ namespace Backend.Controllers
         {
             using(var context = new NTR2019ZContext()) {
                 if (context.Note.Any(n => n.Title == note.Title)) {
-                    return BadRequest();
+                    return StatusCode(400, "A note with title=\"" + note.Title +"\" already exists in the database");
                 }
 
                 Note newNote = new Note(){
@@ -165,18 +165,15 @@ namespace Backend.Controllers
                         + "was deleted.");
                     } else {
                         noteToUpdate.Timestamp = (byte[])noteToUpdate.Timestamp;
-                        return StatusCode(500, "The record you attempted to edit "
+                        return StatusCode(403, "The record you attempted to edit "
                         + "was modified by another user after you got the original value. The "
                         + "edit operation was canceled and the current values in the database "
-                        + "have been displayed. If you still want to edit this record, click "
-                        + "the Save button again. Otherwise click the Back to List hyperlink.");
+                        + "have been displayed. Refresh the page or click Back to List hyperlink.");
                     }
                 } catch (DbUpdateException ex)
                 {
-                    ModelState.AddModelError(string.Empty, ex.InnerException.Message);
+                    return StatusCode(500, ex.InnerException.Message);
                 }
-
-                return Ok();
             }
         }
 
@@ -192,6 +189,9 @@ namespace Backend.Controllers
             using(var context = new NTR2019ZContext()) {
                 try {
                     var note = await context.Note.Where(n => n.Idnote == id).FirstOrDefaultAsync();
+                    if(note == null) {
+                        return StatusCode(500, "Someone already deleted this note");
+                    }
                     var noteCategory = await context.NoteCategory.Where(nc => nc.Idnote == id).ToListAsync();
                     Array.ForEach(noteCategory.ToArray(), nc => {
                         context.NoteCategory.Attach(nc);
@@ -201,7 +201,7 @@ namespace Backend.Controllers
                     context.Note.Remove(note);
                     await context.SaveChangesAsync();
                 } catch(DbUpdateConcurrencyException) {
-                        ModelState.AddModelError("Title","Something went wrong with deleting");
+                    return StatusCode(500, "Upps, something went wrong while deleting the note.");
                 }
 
                 return Ok();
